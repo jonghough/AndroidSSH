@@ -7,6 +7,9 @@
     <string name="hostname">Hostname</string>
     <string name="password">Password</string>
     <string name="enter_info">Enter</string>
- <string name="command">Enter command</string>
- <string name="runcommand">Run</string>
+    <string name="command">Enter command</string>
+    <string name="runcommand">Run</string>
+    <string name="taskfail">Unable to complete command.</string>
+    <string name="progress_runningcommand">Running command</string>
+	<string name="progress_pleasewait">Please wait</string>
 </resources>
