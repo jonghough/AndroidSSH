@@ -31,7 +31,7 @@ public class MainActivity extends Activity implements OnClickListener {
     public void onCreate(Bundle bundle) {
         super.onCreate(bundle);
         
-
+        //Set no title
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         
         setContentView(R.layout.activity_main);
@@ -44,6 +44,7 @@ public class MainActivity extends Activity implements OnClickListener {
         mTextView = (TextView)findViewById(R.id.sshtext);
         mCommandEdit = (EditText)findViewById(R.id.command);
         
+        //set onclicklistener
         mButton.setOnClickListener(this);
         mRunButton.setOnClickListener(this);
         
