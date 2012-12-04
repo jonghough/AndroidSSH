@@ -1,0 +1,1 @@
+This is a simple SSH client implementation for Android, using the JSch library.

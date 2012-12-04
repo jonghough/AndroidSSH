@@ -1,0 +1,109 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FF010101" >
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:orientation="vertical" >
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#FF010101"
+                android:text="@string/username"
+                android:textColor="#FF00FF00" />
+
+            <EditText
+                android:id="@+id/username"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:background="#FF010141"
+                android:inputType="text"
+                android:textColor="#FF00FF00" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#FF010101"
+                android:text="@string/hostname"
+                android:textColor="#FF00FF00" />
+
+            <EditText
+                android:id="@+id/hostname"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:background="#FF010141"
+                android:inputType="text"
+                android:textColor="#FF00FF00" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#FF010101"
+                android:text="@string/password"
+                android:textColor="#FF00FF00" />
+
+            <EditText
+                android:id="@+id/password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:background="#FF010141"
+                android:inputType="textPassword"
+                android:textColor="#FF00FF00" />
+
+            <Button
+                android:id="@+id/enterbutton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:text="@string/enter_info" />
+
+            <TextView
+                android:id="@+id/sshtext"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#FF010101"
+                android:textColor="#FF00FF00" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="#FF010101"
+                    android:text="@string/command"
+                    android:textColor="#FF00FF00" />
+
+                <Button
+                    android:id="@+id/runbutton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/runcommand" />
+            </LinearLayout>
+
+            <EditText
+                android:id="@+id/command"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:background="#FF010141"
+                android:inputType="text"
+                android:textColor="#FF00FF00" />
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>
