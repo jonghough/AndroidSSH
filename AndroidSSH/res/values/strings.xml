@@ -12,4 +12,6 @@
     <string name="taskfail">Unable to complete command.</string>
     <string name="progress_runningcommand">Running command</string>
 	<string name="progress_pleasewait">Please wait</string>
+	<string name="filetransfer">File transfer</string>
+	<string name="up">Up</string>
 </resources>

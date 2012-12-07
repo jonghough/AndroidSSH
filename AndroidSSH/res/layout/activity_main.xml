@@ -6,7 +6,10 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent" >
+        android:layout_height="match_parent"
+        android:stackFromBottom="true"
+        android:textColor="#FF00FF00"
+        android:transcriptMode="alwaysScroll" >
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -28,7 +31,8 @@
                 android:layout_marginBottom="10dp"
                 android:background="#FF010141"
                 android:inputType="text"
-                android:textColor="#FF00FF00" />
+                android:textColor="#FF00FF00"
+                android:textCursorDrawable="@null" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -44,7 +48,8 @@
                 android:layout_marginBottom="10dp"
                 android:background="#FF010141"
                 android:inputType="text"
-                android:textColor="#FF00FF00" />
+                android:textColor="#FF00FF00"
+                android:textCursorDrawable="@null" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -60,7 +65,8 @@
                 android:layout_marginBottom="10dp"
                 android:background="#FF010141"
                 android:inputType="textPassword"
-                android:textColor="#FF00FF00" />
+                android:textColor="#FF00FF00"
+                android:textCursorDrawable="@null" />
 
             <Button
                 android:id="@+id/enterbutton"
@@ -68,13 +74,6 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
                 android:text="@string/enter_info" />
-
-            <TextView
-                android:id="@+id/sshtext"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="#FF010101"
-                android:textColor="#FF00FF00" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -93,7 +92,20 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/runcommand" />
+
+                <Button
+                    android:id="@+id/sftpbutton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/filetransfer" />
             </LinearLayout>
+
+            <TextView
+                android:id="@+id/sshtext"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#FF010101"
+                android:textColor="#FF00FF00" />
 
             <EditText
                 android:id="@+id/command"
@@ -101,8 +113,11 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
                 android:background="#FF010141"
+                android:gravity="top|left"
                 android:inputType="text"
-                android:textColor="#FF00FF00" />
+                android:singleLine="true"
+                android:textColor="#FF00FF00"
+                android:textCursorDrawable="@null" />
         </LinearLayout>
     </ScrollView>
 

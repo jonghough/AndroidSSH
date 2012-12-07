@@ -3,13 +3,14 @@ package com.jgh.androidssh;
 import java.io.IOException;
 
 import com.jcraft.jsch.JSchException;
-import com.jgh.androidssh.channels.CommandExec;
-import com.jgh.androidssh.channels.SessionUserInfo;
-import com.jgh.androidssh.channels.SshExecutor;
+import com.jgh.androidssh.sshutils.CommandExec;
+import com.jgh.androidssh.sshutils.SessionUserInfo;
+import com.jgh.androidssh.sshutils.SshExecutor;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
@@ -27,7 +28,7 @@ public class MainActivity extends Activity implements OnClickListener {
     private EditText mHostEdit;
     private EditText mPasswordEdit;
     private EditText mCommandEdit;
-    private Button mButton, mRunButton;
+    private Button mButton, mRunButton, mSftpButton;
     private SessionUserInfo mSUI;
     
     @Override
@@ -43,6 +44,7 @@ public class MainActivity extends Activity implements OnClickListener {
         mHostEdit = (EditText)findViewById(R.id.hostname);
         mPasswordEdit = (EditText)findViewById(R.id.password);
         mButton = (Button)findViewById(R.id.enterbutton);
+        mSftpButton = (Button)findViewById(R.id.sftpbutton);
         mRunButton = (Button)findViewById(R.id.runbutton);
         mTextView = (TextView)findViewById(R.id.sshtext);
         mCommandEdit = (EditText)findViewById(R.id.command);
@@ -50,6 +52,7 @@ public class MainActivity extends Activity implements OnClickListener {
         // set onclicklistener
         mButton.setOnClickListener(this);
         mRunButton.setOnClickListener(this);
+        mSftpButton.setOnClickListener(this);
         
     }
     
@@ -77,9 +80,10 @@ public class MainActivity extends Activity implements OnClickListener {
         
         @Override
         protected void onPreExecute() {
+            
             mProgressDialog.setTitle(getResources().getText(R.string.progress_runningcommand));
             mProgressDialog.setMessage(getResources().getText(R.string.progress_pleasewait));
-            mProgressDialog.show();
+            // mProgressDialog.show();
             
         }
         
@@ -90,9 +94,9 @@ public class MainActivity extends Activity implements OnClickListener {
                 mEx.executeCommand();
             } catch (JSchException e) {
                 
-                makeToast(R.string.taskfail);
+                // makeToast(R.string.taskfail);
             } catch (IOException e) {
-                makeToast(R.string.taskfail);
+                // makeToast(R.string.taskfail);
             }
             success = true;
             return success;
@@ -101,9 +105,10 @@ public class MainActivity extends Activity implements OnClickListener {
         @Override
         protected void onPostExecute(Boolean b) {
             if (b) {
-                mTextView.setText(mEx.getString());
+                mTextView.setText(mTextView.getText() + "\n" + mEx.getString() + "\n"
+                                + mUserEdit.getText().toString().trim() + "\n");
+                
             }
-            mProgressDialog.dismiss();
             
         }
     }
@@ -117,6 +122,32 @@ public class MainActivity extends Activity implements OnClickListener {
         Toast.makeText(this, getResources().getString(text), Toast.LENGTH_SHORT).show();
     }
     
+   
+   /**
+    *  
+    */
+    private void startSftpActivity(){
+        Intent intent = new Intent(this,FileListActivity.class);
+        String[] info = {mSUI.getUser(), mSUI.getHost(), mSUI.getPassword()};
+       
+        intent.putExtra("UserInfo", info);
+        
+        startActivity(intent);
+    }
+    
+    /**
+     * @return
+     */
+    private String getLastLine() {//unused
+        int index = mCommandEdit.getText().toString().lastIndexOf("\n");
+        if (index == -1) { return mCommandEdit.getText().toString().trim(); }
+        
+        String lastLine = mCommandEdit.getText().toString()
+                        .substring(index, mCommandEdit.getText().toString().length());
+        
+        return lastLine.trim();
+    }
+    
     /**
      * Checks if the EditText is empty.
      * 
@@ -124,7 +155,7 @@ public class MainActivity extends Activity implements OnClickListener {
      * @return true if empty
      */
     private boolean isEditTextEmpty(EditText editText) {
-        if (editText.getText().toString() == null || editText.getText().toString() == "") { return true; }
+        if (editText.getText() == null || editText.getText().toString().equalsIgnoreCase("")) { return true; }
         return false;
     }
     
@@ -146,11 +177,20 @@ public class MainActivity extends Activity implements OnClickListener {
             
             // run command
             else {
-                CommandExec com = new CommandExec(mCommandEdit.getText().toString().trim(), mSUI);
+                // get the last line of terminal
+                String command = getLastLine();
                 
-                new SshTask(this,com).execute();
+                CommandExec com = new CommandExec(command, mSUI);
+                
+                new SshTask(this, com).execute();
+                
+                
             }
             
+        }
+        
+        else if(v==mSftpButton){
+            startSftpActivity();
         }
         
     }

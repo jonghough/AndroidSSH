@@ -1,4 +1,4 @@
-package com.jgh.androidssh.channels;
+package com.jgh.androidssh.sshutils;
 
 import java.io.IOException;
 

@@ -1,12 +1,10 @@
-package com.jgh.androidssh.channels;
+package com.jgh.androidssh.sshutils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Properties;
-
-import android.util.Log;
 
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelExec;
@@ -49,7 +47,6 @@ public class CommandExec implements SshExecutor {
         } catch (JSchException jschE) {
             throw new JSchException("Failed to get session.");
         }
-        Log.v(mSessionUserInfo.getUser() + "/", mSessionUserInfo.getHost() + "");
         
         session.setUserInfo(mSessionUserInfo);
         
@@ -75,7 +72,7 @@ public class CommandExec implements SshExecutor {
         BufferedReader br = new BufferedReader(new InputStreamReader(in));
         
         while ((line = br.readLine()) != null) {
-            stringBuilder.append(line+"\n");//append newline
+            stringBuilder.append(line + "\n");// append newline
         }
         
         in.close();
