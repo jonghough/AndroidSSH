@@ -1,26 +1,36 @@
 package com.jgh.androidssh;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
+import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.SftpProgressMonitor;
 import com.jgh.androidssh.adapters.FileListAdapter;
-import com.jgh.androidssh.services.SftpService;
+import com.jgh.androidssh.sshutils.SessionUserInfo;
+import com.jgh.androidssh.sshutils.SftpExec;
+import com.jgh.androidssh.sshutils.SshExecutor;
 
 import android.app.Activity;
-import android.content.Intent;
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.WindowManager.LayoutParams;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.ListView;
 
 /**
- * Activity to list files.
+ * Activity to list files. Uploads chosen files to server (SFTP) using an
+ * AsyncTask.
  * 
  * @author Jonathan Hough
+ * @since 7 Dec 2012
  */
 public class FileListActivity extends Activity implements OnItemClickListener, OnClickListener {
     
@@ -88,24 +98,15 @@ public class FileListActivity extends Activity implements OnItemClickListener, O
             
         } else {
             // sftp the file
-            startIntentService(mFilenames.get(position));
+            SftpProgressDialog progressDialog = new SftpProgressDialog(this, 0);
+            progressDialog.setIndeterminate(false);
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+            SessionUserInfo sui = new SessionUserInfo(mUserInfo[0], mUserInfo[1], mUserInfo[2]);
+            File[] arr = {mFilenames.get(position)};
+            SftpExec exec = new SftpExec(arr, sui, progressDialog);
+            new SFTPTask(this, exec, progressDialog).execute();
         }
         
-    }
-    
-    /**
-     * Starts a service to perform the file transfer.
-     */
-    private void startIntentService(File file) {
-        
-        Intent intent = new Intent(this, SftpService.class);
-        
-        String[] files = {file.getPath()};
-        
-        intent.putExtra("Files", files);
-        intent.putExtra("UserInfo", mUserInfo);
-        
-        startService(intent);
     }
     
     // go back up to parent folder
@@ -130,4 +131,121 @@ public class FileListActivity extends Activity implements OnItemClickListener, O
         
     }
     
+    public class SFTPTask extends AsyncTask<Void, Void, Boolean> {
+        
+        private SshExecutor mEx;
+        
+        private SftpProgressDialog mProgressDialog;
+        
+        //
+        // Constructor
+        //
+        
+        public SFTPTask(Context context, SshExecutor exec, SftpProgressDialog spd) {
+            mEx = exec;
+            mProgressDialog = spd;
+            
+        }
+        
+        @Override
+        protected void onPreExecute() {
+            
+            mProgressDialog.setTitle(getResources().getText(R.string.progress_runningcommand));
+            mProgressDialog.setMessage(getResources().getText(R.string.progress_pleasewait));
+            mProgressDialog.setCanceledOnTouchOutside(false);
+            mProgressDialog.show();
+            getWindow().addFlags(LayoutParams.FLAG_KEEP_SCREEN_ON);
+            
+        }
+        
+        @Override
+        protected Boolean doInBackground(Void... voids) {
+            
+            boolean success = upload();
+            
+            return success;
+        }
+        
+        @Override
+        protected void onPostExecute(Boolean b) {
+            // TODO: if fail explain to user
+            mProgressDialog.dismiss();
+            getWindow().addFlags(LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON);
+        }
+        
+        /**
+         * @param fileArray
+         */
+        private boolean upload() {
+            
+            boolean success = true;
+            
+            try {
+                mEx.executeCommand();
+            } catch (JSchException e) {
+                success = false;
+                e.printStackTrace();
+            } catch (IOException e) {
+                success = false;
+                e.printStackTrace();
+            }
+            
+            return success;
+        }
+    }
+    
+    private class SftpProgressDialog extends ProgressDialog implements SftpProgressMonitor {
+        
+        /**
+         * Size of file to transfer
+         */
+        private long mSize = 0;
+        /**
+         * Current progress count
+         */
+        private long mCount = 0;
+        
+        /**
+         * Constructor
+         * 
+         * @param context
+         * @param theme
+         * @param file
+         */
+        
+        public SftpProgressDialog(Context context, int theme) {
+            super(context, theme);
+            // TODO Auto-generated constructor stub
+        }
+        
+        //
+        // SftpProgressMonitor methods
+        //
+        
+        /**
+         * Gets the data uploaded since the last count.
+         */
+        public boolean count(long arg0) {
+            mCount += arg0;
+            this.setProgress((int)((float)(mCount) / (float)(mSize) * (float)getMax()));
+            return true;
+        }
+        
+        /**
+         * Data upload is ended.
+         */
+        public void end() {
+            this.setProgress(this.getMax());
+            
+        }
+        
+        /**
+         * Initializes the SftpProgressMonitor
+         */
+        public void init(int arg0, String arg1, String arg2, long arg3) {
+            mSize = arg3;
+            
+        }
+        
+    }
 }

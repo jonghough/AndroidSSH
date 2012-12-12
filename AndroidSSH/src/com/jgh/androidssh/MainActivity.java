@@ -83,7 +83,7 @@ public class MainActivity extends Activity implements OnClickListener {
             
             mProgressDialog.setTitle(getResources().getText(R.string.progress_runningcommand));
             mProgressDialog.setMessage(getResources().getText(R.string.progress_pleasewait));
-            // mProgressDialog.show();
+            mProgressDialog.show();
             
         }
         
@@ -94,9 +94,9 @@ public class MainActivity extends Activity implements OnClickListener {
                 mEx.executeCommand();
             } catch (JSchException e) {
                 
-                // makeToast(R.string.taskfail);
+                makeToast(R.string.taskfail);
             } catch (IOException e) {
-                // makeToast(R.string.taskfail);
+                makeToast(R.string.taskfail);
             }
             success = true;
             return success;
@@ -104,10 +104,15 @@ public class MainActivity extends Activity implements OnClickListener {
         
         @Override
         protected void onPostExecute(Boolean b) {
+            mProgressDialog.dismiss();
+            
             if (b) {
                 mTextView.setText(mTextView.getText() + "\n" + mEx.getString() + "\n"
                                 + mUserEdit.getText().toString().trim() + "\n");
                 
+            }
+            else{
+                makeToast(R.string.taskfail);
             }
             
         }
@@ -122,14 +127,14 @@ public class MainActivity extends Activity implements OnClickListener {
         Toast.makeText(this, getResources().getString(text), Toast.LENGTH_SHORT).show();
     }
     
-   
-   /**
-    *  
-    */
-    private void startSftpActivity(){
-        Intent intent = new Intent(this,FileListActivity.class);
+    /**
+     * Start activity to do SFTP transfer. User will choose from list of files
+     * to transfer.
+     */
+    private void startSftpActivity() {
+        Intent intent = new Intent(this, FileListActivity.class);
         String[] info = {mSUI.getUser(), mSUI.getHost(), mSUI.getPassword()};
-       
+        
         intent.putExtra("UserInfo", info);
         
         startActivity(intent);
@@ -138,7 +143,7 @@ public class MainActivity extends Activity implements OnClickListener {
     /**
      * @return
      */
-    private String getLastLine() {//unused
+    private String getLastLine() {// unused
         int index = mCommandEdit.getText().toString().lastIndexOf("\n");
         if (index == -1) { return mCommandEdit.getText().toString().trim(); }
         
@@ -162,8 +167,8 @@ public class MainActivity extends Activity implements OnClickListener {
     public void onClick(View v) {
         if (v == mButton) {
             if (isEditTextEmpty(mUserEdit) || isEditTextEmpty(mHostEdit) || isEditTextEmpty(mPasswordEdit)) { return; }
-            mSUI = new SessionUserInfo(mUserEdit.getText().toString(), mHostEdit.getText().toString(), mPasswordEdit
-                            .getText().toString());
+            mSUI = new SessionUserInfo(mUserEdit.getText().toString().trim(), mHostEdit.getText().toString().trim(),
+                            mPasswordEdit.getText().toString().trim());
             
         }
         
@@ -172,6 +177,7 @@ public class MainActivity extends Activity implements OnClickListener {
             if (isEditTextEmpty(mCommandEdit)) { return; }
             
             if (mSUI == null) {
+                makeToast(R.string.insertallvalues);
                 return;
             }
             
@@ -179,18 +185,23 @@ public class MainActivity extends Activity implements OnClickListener {
             else {
                 // get the last line of terminal
                 String command = getLastLine();
-                
-                CommandExec com = new CommandExec(command, mSUI);
-                
-                new SshTask(this, com).execute();
-                
+                if (mSUI != null) {
+                    CommandExec com = new CommandExec(command, mSUI);
+                    
+                    new SshTask(this, com).execute();
+                } else {
+                    makeToast(R.string.insertallvalues);
+                    return;
+                }
                 
             }
             
         }
         
-        else if(v==mSftpButton){
-            startSftpActivity();
+        else if (v == mSftpButton) {
+            if (mSUI != null) {
+                startSftpActivity();
+            }
         }
         
     }

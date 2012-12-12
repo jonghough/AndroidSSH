@@ -1,7 +1,6 @@
 package com.jgh.androidssh.sshutils;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
@@ -11,6 +10,7 @@ import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpException;
+import com.jcraft.jsch.SftpProgressMonitor;
 
 /**
  * Performs SFTP transfer of files.
@@ -29,6 +29,7 @@ public class SftpExec implements SshExecutor {
     //
     private File[] mFiles;
     
+    private SftpProgressMonitor mSPM;
     //
     //Constructor
     //
@@ -37,6 +38,13 @@ public class SftpExec implements SshExecutor {
         mFiles = files;
         mSessionUserInfo = sessionUserInfo;
     }
+    
+    public SftpExec(File[] files, SessionUserInfo sessionUserInfo, SftpProgressMonitor spm) {
+        mFiles = files;
+        mSessionUserInfo = sessionUserInfo;
+        mSPM = spm;
+    }
+    
     
     /**
      *Creates a connection and sequentially transfers each file.
@@ -69,13 +77,13 @@ public class SftpExec implements SshExecutor {
         
         channel.connect();
         ChannelSftp channelSftp = (ChannelSftp)channel;
-    
-        
+      
+       
         for (File file : mFiles) {
             
             try {
               
-                channelSftp.put(new FileInputStream(file), file.getName());
+                channelSftp.put(file.getPath(), file.getName(),mSPM, ChannelSftp.APPEND);
                 
                
             } catch (SftpException e) {
