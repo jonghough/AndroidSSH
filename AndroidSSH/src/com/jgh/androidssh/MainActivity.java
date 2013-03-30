@@ -4,6 +4,7 @@ package com.jgh.androidssh;
 import java.io.IOException;
 
 import com.jcraft.jsch.JSchException;
+import com.jgh.androidssh.sshutils.CommandExec;
 import com.jgh.androidssh.sshutils.SessionUserInfo;
 import com.jgh.androidssh.sshutils.SshExecutor;
 
@@ -31,6 +32,8 @@ public class MainActivity extends Activity implements OnClickListener {
     private Button mButton, mEndSessionBtn, mRunButton, mSftpButton;
     private SessionUserInfo mSUI;
 
+    private CommandExec mComEx;
+    
     @Override
     public void onCreate(Bundle bundle) {
         super.onCreate(bundle);
@@ -181,7 +184,8 @@ public class MainActivity extends Activity implements OnClickListener {
             mSUI = new SessionUserInfo(mUserEdit.getText().toString().trim(), mHostEdit.getText()
                     .toString().trim(),
                     mPasswordEdit.getText().toString().trim());
-
+            //start the command executor
+            mComEx = new CommandExec(mSUI);
         }
 
         else if (v == mRunButton) {
@@ -200,9 +204,12 @@ public class MainActivity extends Activity implements OnClickListener {
                 // get the last line of terminal
                 String command = getLastLine();
                 if (mSUI != null) {
-                    CommandExec com = new CommandExec(command, mSUI);
-
-                    new SshTask(this, com).execute();
+                    if(mComEx == null)
+                        mComEx = new CommandExec( mSUI);
+                       
+                    mComEx.setCommand(command);
+                        
+                    new SshTask(this, mComEx).execute();
                 } else {
                     makeToast(R.string.insertallvalues);
                     return;
@@ -216,6 +223,10 @@ public class MainActivity extends Activity implements OnClickListener {
             if (mSUI != null) {
                 startSftpActivity();
             }
+        }
+        else if (v == this.mEndSessionBtn){
+            if(mComEx!=null)
+                mComEx.endSession();
         }
 
     }
