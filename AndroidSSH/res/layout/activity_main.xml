@@ -68,12 +68,25 @@
                 android:textColor="#FF00FF00"
                 android:textCursorDrawable="@null" />
 
-            <Button
-                android:id="@+id/enterbutton"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:text="@string/enter_info" />
+                android:orientation="horizontal" >
+
+                <Button
+                    android:id="@+id/enterbutton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:text="@string/enter_info" />
+
+                <Button
+                    android:id="@+id/endsessionbutton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:text="@string/enter_info" />
+            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
