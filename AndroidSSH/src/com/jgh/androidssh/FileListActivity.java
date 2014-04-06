@@ -19,11 +19,15 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnDragListener;
 import android.view.WindowManager.LayoutParams;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.ListView;
+import android.view.DragEvent;
+
+import com.jgh.androidssh.sshutils.SessionController;
 
 /**
  * Activity to list files. Uploads chosen files to server (SFTP) using an
@@ -32,20 +36,21 @@ import android.widget.ListView;
  * @author Jonathan Hough
  * @since 7 Dec 2012
  */
-public class FileListActivity extends Activity implements OnItemClickListener, OnClickListener {
+public class FileListActivity extends Activity implements OnItemClickListener, OnClickListener, OnDragListener {
     
     private ArrayList<File> mFilenames = new ArrayList<File>();
-    
     private ListView mListView;
-    
     private FileListAdapter mFileListAdapter;
-    
     private String[] mUserInfo;
-    
     private File mRootFile;
-    
     private Button mUpButton;
-    
+    private SessionController mSessionController;
+    @Override
+    public boolean onDrag(View v, DragEvent event) {
+        return true;
+    }
+
+
     @Override
     public void onCreate(Bundle bundle) {
         super.onCreate(bundle);
@@ -53,9 +58,7 @@ public class FileListActivity extends Activity implements OnItemClickListener, O
         setContentView(R.layout.activity_filelistactivity);
         
         mUserInfo = getIntent().getExtras().getStringArray("UserInfo");
-        
         mListView = (ListView)findViewById(R.id.listview);
-        
         // Get external storage
         mRootFile = Environment.getExternalStorageDirectory();
         // list files
@@ -67,9 +70,11 @@ public class FileListActivity extends Activity implements OnItemClickListener, O
         
         mListView.setAdapter(mFileListAdapter);
         mListView.setOnItemClickListener(this);
-        
         mUpButton = (Button)findViewById(R.id.upbutton);
         mUpButton.setOnClickListener(this);
+
+        SessionUserInfo sui = new SessionUserInfo(mUserInfo[0], mUserInfo[1], mUserInfo[2]);
+        mSessionController = new SessionController(sui);
         
     }
     
@@ -101,9 +106,9 @@ public class FileListActivity extends Activity implements OnItemClickListener, O
             SftpProgressDialog progressDialog = new SftpProgressDialog(this, 0);
             progressDialog.setIndeterminate(false);
             progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-            SessionUserInfo sui = new SessionUserInfo(mUserInfo[0], mUserInfo[1], mUserInfo[2]);
+
             File[] arr = {mFilenames.get(position)};
-            SftpExec exec = new SftpExec(arr, sui, progressDialog);
+            SftpExec exec = new SftpExec(arr, progressDialog);
             new SFTPTask(this, exec, progressDialog).execute();
         }
         
@@ -130,7 +135,10 @@ public class FileListActivity extends Activity implements OnItemClickListener, O
         }
         
     }
-    
+
+
+
+
     public class SFTPTask extends AsyncTask<Void, Void, Boolean> {
         
         private SshExecutor mEx;
@@ -174,14 +182,14 @@ public class FileListActivity extends Activity implements OnItemClickListener, O
         }
         
         /**
-         * @param fileArray
+         *
          */
         private boolean upload() {
             
             boolean success = true;
             
             try {
-                mEx.executeCommand();
+                mEx.executeCommand(mSessionController.getSession());
             } catch (JSchException e) {
                 success = false;
                 e.printStackTrace();
@@ -210,7 +218,6 @@ public class FileListActivity extends Activity implements OnItemClickListener, O
          * 
          * @param context
          * @param theme
-         * @param file
          */
         
         public SftpProgressDialog(Context context, int theme) {
@@ -246,6 +253,11 @@ public class FileListActivity extends Activity implements OnItemClickListener, O
             mSize = arg3;
             
         }
+
+
+
         
     }
+
+
 }

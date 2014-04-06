@@ -3,7 +3,7 @@ package com.jgh.androidssh.sshutils;
 import java.io.IOException;
 
 import com.jcraft.jsch.JSchException;
-
+import com.jcraft.jsch.Session;
 /**
  * Interface for any objects which make JSch connections to implement.
  * @author Jonathan Hough
@@ -17,7 +17,7 @@ public interface SshExecutor {
      * @throws JSchException
      * @throws IOException
      */
-    public int executeCommand() throws JSchException, IOException;
+    public int executeCommand(Session session) throws JSchException, IOException;
     
     /**
      * Gets a return string.

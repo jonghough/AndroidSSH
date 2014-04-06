@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:orientation="vertical">
 
     <TextView
         android:id="@+id/textview_item"
@@ -10,6 +10,7 @@
         android:layout_height="wrap_content"
         android:paddingTop="15dp"
         android:background="#FF010101"
-        android:textColor="#FF00FF00" />
+        android:textColor="#FF00FF00"
+        android:cacheColorHint="#0000" />
 
 </LinearLayout>

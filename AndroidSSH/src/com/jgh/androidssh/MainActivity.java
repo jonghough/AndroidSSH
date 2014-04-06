@@ -7,7 +7,7 @@ import com.jcraft.jsch.JSchException;
 import com.jgh.androidssh.sshutils.CommandExec;
 import com.jgh.androidssh.sshutils.SessionUserInfo;
 import com.jgh.androidssh.sshutils.SshExecutor;
-
+import com.jgh.androidssh.sshutils.SessionController;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -31,7 +31,7 @@ public class MainActivity extends Activity implements OnClickListener {
     private EditText mCommandEdit;
     private Button mButton, mEndSessionBtn, mRunButton, mSftpButton;
     private SessionUserInfo mSUI;
-
+    private SessionController mSessionController;
     private CommandExec mComEx;
     
     @Override
@@ -58,6 +58,7 @@ public class MainActivity extends Activity implements OnClickListener {
         mEndSessionBtn.setOnClickListener(this);
         mRunButton.setOnClickListener(this);
         mSftpButton.setOnClickListener(this);
+
 
     }
 
@@ -96,7 +97,7 @@ public class MainActivity extends Activity implements OnClickListener {
         protected Boolean doInBackground(Void... arg0) {
             boolean success = false;
             try {
-                mEx.executeCommand();
+                mEx.executeCommand(mSessionController.getSession());
             } catch (JSchException e) {
 
                 makeToast(R.string.taskfail);
@@ -184,8 +185,7 @@ public class MainActivity extends Activity implements OnClickListener {
             mSUI = new SessionUserInfo(mUserEdit.getText().toString().trim(), mHostEdit.getText()
                     .toString().trim(),
                     mPasswordEdit.getText().toString().trim());
-            //start the command executor
-            mComEx = new CommandExec(mSUI);
+            mSessionController = new SessionController(mSUI);
         }
 
         else if (v == mRunButton) {
@@ -205,7 +205,7 @@ public class MainActivity extends Activity implements OnClickListener {
                 String command = getLastLine();
                 if (mSUI != null) {
                     if(mComEx == null)
-                        mComEx = new CommandExec( mSUI);
+                        mComEx = new CommandExec();
                        
                     mComEx.setCommand(command);
                         
@@ -225,8 +225,8 @@ public class MainActivity extends Activity implements OnClickListener {
             }
         }
         else if (v == this.mEndSessionBtn){
-            if(mComEx!=null)
-                mComEx.endSession();
+            //if(mComEx!=null)
+              //  mSessionController.disconnect();
         }
 
     }

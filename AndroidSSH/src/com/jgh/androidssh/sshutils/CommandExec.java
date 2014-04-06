@@ -1,6 +1,6 @@
 
 package com.jgh.androidssh.sshutils;
-
+import android.util.Log;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,20 +21,16 @@ import com.jcraft.jsch.Session;
  */
 public class CommandExec implements SshExecutor {
 
+    public static final String TAG = "COMMANDEXEC";
     // the command to send
     private String mCommand;
     // the return string (if any)
     private String mReturnString;
-    // User session information
-    private SessionUserInfo mSessionUserInfo;
-
-    private Session mSession;
 
     public CommandExec(SessionUserInfo sessionUserInfo) {
-
-        mSessionUserInfo = sessionUserInfo;
     }
-
+    public CommandExec() {
+    }
     /**
      * Sets the command.
      * 
@@ -48,30 +44,13 @@ public class CommandExec implements SshExecutor {
      * Opens connection and sends shell command to server. Command output is
      * returned in an inputstream.
      */
-    public int executeCommand() throws JSchException, IOException {
-        JSch jsch = new JSch();
-
-        // Start session
-        if (mSession == null) {
-            try {
-                mSession = jsch.getSession(mSessionUserInfo.getUser(), mSessionUserInfo.getHost(),
-                        22); // port
-                             // 22
-                mSession.setUserInfo(mSessionUserInfo);
-
-                Properties properties = new Properties();
-                properties.setProperty("StrictHostKeyChecking", "no");
-                mSession.setConfig(properties);
-
-                // connect
-                mSession.connect();
-
-            } catch (JSchException jschE) {
-                throw new JSchException("Failed to get session.");
-            }
-
+    public int executeCommand(Session session) throws JSchException, IOException {
+        Log.v(TAG,"EXECUTING COMMAND");
+        if(session == null || !session.isConnected()){
+            Log.v(TAG,"NULL OR NO CONNECTION");
+            return -1;
         }
-        Channel channel = mSession.openChannel("exec");
+        Channel channel = session.openChannel("exec");
 
         ((ChannelExec) channel).setCommand(mCommand);
 
@@ -97,7 +76,7 @@ public class CommandExec implements SshExecutor {
 
         else
             mReturnString = "...\n";
-
+        Log.v(TAG,"String is "+mReturnString);
         // disconnect
         channel.disconnect();
 
@@ -111,8 +90,6 @@ public class CommandExec implements SshExecutor {
         return mReturnString;
     }
 
-    public void endSession() {
-        mSession.disconnect();
-    }
+
 
 }

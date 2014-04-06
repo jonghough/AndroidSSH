@@ -6,7 +6,7 @@ import java.io.IOException;
 import com.jcraft.jsch.JSchException;
 import com.jgh.androidssh.sshutils.SessionUserInfo;
 import com.jgh.androidssh.sshutils.SftpExec;
-
+import com.jgh.androidssh.sshutils.SessionController;
 import android.app.IntentService;
 import android.content.Intent;
 import android.os.Bundle;
@@ -39,7 +39,7 @@ public class SftpService extends IntentService {
         
         SftpExec com = new SftpExec(files, sui);
         try {
-            com.executeCommand();
+            com.executeCommand(new SessionController(sui).getSession());
         } catch (JSchException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

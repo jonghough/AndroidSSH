@@ -44,33 +44,21 @@ public class SftpExec implements SshExecutor {
         mSessionUserInfo = sessionUserInfo;
         mSPM = spm;
     }
+
+    public SftpExec(File[] files, SftpProgressMonitor spm) {
+        mFiles = files;
+        mSPM = spm;
+    }
     
     
     /**
      *Creates a connection and sequentially transfers each file.
      */
-    public int executeCommand() throws JSchException, IOException {
-        
-        JSch jsch = new JSch();
-        
-        // Start session
-        Session session = null;
-        try {
-            session = jsch.getSession(mSessionUserInfo.getUser(), mSessionUserInfo.getHost(), 22); // port
-                                                                                                   // 22
-        } catch (JSchException jschE) {
-            throw new JSchException("Failed to get session.");
+    public int executeCommand(Session session) throws JSchException, IOException {
+        if(session == null || !session.isConnected()){
+            return -1;
         }
-        
-        session.setUserInfo(mSessionUserInfo);
-        session.getUserInfo().getPassword();
-        Properties properties = new Properties();
-        properties.setProperty("StrictHostKeyChecking", "no");
-        session.setConfig(properties);
-        
-        // connect
-        session.connect();
-        
+
         Channel channel = session.openChannel("sftp");
         
         channel.setInputStream(null);
@@ -91,10 +79,6 @@ public class SftpExec implements SshExecutor {
                 e.printStackTrace();
             }
         }
-        
-        
-        channel.disconnect();
-        session.disconnect();
         
         return 0;
     }
