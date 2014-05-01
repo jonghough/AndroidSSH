@@ -4,6 +4,9 @@ import java.io.File;
 import java.util.ArrayList;
 
 import android.content.Context;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,27 +54,30 @@ public class FileListAdapter extends BaseAdapter {
 
             convertView = mInflater.inflate(com.jgh.androidssh.R.layout.listview_item, null);
 
-            holder.textView = (TextView) convertView.findViewById(com.jgh.androidssh.R.id.textview_item);
-
+            TextView textView = (TextView) convertView.findViewById(com.jgh.androidssh.R.id.textview_item);
+            holder.textView = textView;
             // change text color for directories
-            if (mFiles.get(position).isDirectory()) {
-                holder.color = 0xff009999;
-            }
-        } else {
+            convertView.setTag(holder);
+        }
+        else {
             holder = (ViewHolder) convertView.getTag();
-            // change text color for directories
-            if (mFiles.get(position).isDirectory()) {
-                holder.color = 0xff0044FF;
-            }
-
-            holder.textView.setTextColor(holder.color);
         }
 
         holder.textView.setText(mFiles.get(position).getName());
+        if (mFiles.get(position).isDirectory()) {
+            holder.color = 0xff009999;
+        }
+        else{
+            holder.color = 0xff558899;
+        }
 
-        convertView.setTag(holder);
+        holder.textView.setTextColor(holder.color);
+
+        //setName(position, holder.textView);
         return convertView;
     }
+
+
 
     /**
      * Private view holder class
@@ -83,5 +89,8 @@ public class FileListAdapter extends BaseAdapter {
         TextView textView;
         int color;
     }
+
+
+
 
 }

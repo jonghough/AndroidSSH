@@ -12,6 +12,9 @@ import android.content.Intent;
 import android.os.Bundle;
 
 
+/**
+ *
+ */
 public class SftpService extends IntentService {
     
     public SftpService(){
@@ -25,7 +28,7 @@ public class SftpService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         
-        Bundle bundle = intent.getExtras();
+     /*   Bundle bundle = intent.getExtras();
         String[] fileArray = bundle.getStringArray("Files");
         String[] userInfo = bundle.getStringArray("UserInfo");
        
@@ -46,7 +49,7 @@ public class SftpService extends IntentService {
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-        }
+        }*/
     }
     
 }

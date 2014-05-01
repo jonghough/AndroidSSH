@@ -1,8 +1,12 @@
 package com.jgh.androidssh.sshutils;
 
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.os.AsyncTask;
 import android.util.Log;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -16,7 +20,14 @@ import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpException;
 import com.jcraft.jsch.SftpProgressMonitor;
+import com.jgh.androidssh.FileListActivity;
+import com.jgh.androidssh.R;
+import com.jgh.androidssh.adapters.FileListAdapter;
+import com.jgh.androidssh.adapters.RemoteFileListAdapter;
+
 import java.util.Properties;
+import java.util.Vector;
+
 /**
  * Created by jon on 3/25/14.
  */
@@ -29,26 +40,149 @@ public class SessionController {
     private SessionUserInfo mSessionUserInfo;
     private ChannelExec mChannelExec;
     private Thread mThread;
-    /**
-     *
-     * @param sessionUserInfo The SessionUserInfo to be used by all SSH channels.
-     */
-    public SessionController(SessionUserInfo sessionUserInfo){
-        mSessionUserInfo = sessionUserInfo;
-        connect();
+    private SftpController mSftpController;
+
+    private static SessionController sSessionController;
+
+
+    private SessionController(){
     }
+
+    public static SessionController getSessionController(){
+        if(sSessionController == null){
+            sSessionController = new SessionController();
+        }
+        return sSessionController;
+    }
+
 
 
     public Session getSession(){
         return mSession;
     }
 
+    /**
+     *
+     * @param sessionUserInfo The SessionUserInfo to be used by all SSH channels.
+     */
+    private SessionController(SessionUserInfo sessionUserInfo){
+        mSessionUserInfo = sessionUserInfo;
+        connect();
+    }
+
+    public void setUserInfo(SessionUserInfo sessionUserInfo){
+        mSessionUserInfo = sessionUserInfo;
+    }
+
+
 
     public void connect(){
-        disconnect();
-        mThread = new Thread(new SshRunnable());
-        mThread.start();
+        if(mSession == null){
+            mThread = new Thread(new SshRunnable());
+            mThread.start();
+        }
+        else if(!mSession.isConnected()){
+            mThread = new Thread(new SshRunnable());
+            mThread.start();
+        }
     }
+
+
+
+
+
+    private class SftpTask extends AsyncTask<Void,Void,Boolean>{
+        RemoteFileListAdapter mfileListAdapter;
+        Context mContext;
+        Vector<ChannelSftp.LsEntry> mRemoteFiles;
+        String mPath;
+        public SftpTask(Context context, RemoteFileListAdapter fileListAdapter, String path){
+
+            mfileListAdapter    = fileListAdapter;
+            mContext            = context;
+            mPath               = path == null ? "": path+"/";
+        }
+
+        @Override
+        protected void onPreExecute(){
+            if(!mSession.isConnected()){
+                Log.v("SESSIONCONTROLLER","SESSION IS NOT CONNECTED");
+                connect();
+            }
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... voids) {
+            Boolean success = false;
+
+
+            try{
+                mRemoteFiles = null;
+                if(true){//||mMainChannel == null || mMainChannel.isClosed()){
+                    Channel channel = mSession.openChannel("sftp");
+                    channel.setInputStream(null);
+                    channel.connect();
+                    ChannelSftp channelsftp = (ChannelSftp)channel;
+                    mRemoteFiles = channelsftp.ls("/"+mPath);
+                    if(mRemoteFiles ==null){
+                      Log.v("SESSIONCONTROLLER"," remote file list is null");
+                    }
+                    // Log.v("SFTPEXEC", "REMOTE FILE SIZE " + mRemoteFiles.size());
+                    else{
+                        for(ChannelSftp.LsEntry e : mRemoteFiles){
+
+                           Log.v("SFTPEXEC"," file "+ e.getFilename());
+                        }
+
+                    }
+                }
+            }
+            catch(Exception e){
+                Log.v("SESSIONCONTROLLER", "sftprunnable exptn "+e.getCause());
+                success = false;
+                return success;
+            }
+
+
+            return true;
+        }
+
+
+        @Override
+        protected void onPostExecute(Boolean success) {
+            if(success){
+                mfileListAdapter = new RemoteFileListAdapter(mContext,mRemoteFiles);
+                ((FileListActivity)mContext).setupRemoteFiles(mfileListAdapter);
+            }
+        }
+    }
+
+
+    /**
+     *
+     * @param taskCallbackHandler
+     * @param path
+     * @throws JSchException
+     * @throws SftpException
+     */
+    public void openChannel(TaskCallbackHandler taskCallbackHandler, String path) throws JSchException, SftpException{
+
+        if(mSession == null || !mSession.isConnected()){
+            return;
+        }
+
+        if(mSftpController == null){
+            mSftpController = new SftpController();
+
+        }
+        //list the files.
+        mSftpController.lsRemoteFiles(mSession, taskCallbackHandler, path);
+
+
+    }
+
+
+
 
     public void disconnect(){
         if(mSession != null){

@@ -185,7 +185,9 @@ public class MainActivity extends Activity implements OnClickListener {
             mSUI = new SessionUserInfo(mUserEdit.getText().toString().trim(), mHostEdit.getText()
                     .toString().trim(),
                     mPasswordEdit.getText().toString().trim());
-            mSessionController = new SessionController(mSUI);
+            mSessionController = SessionController.getSessionController();
+            mSessionController.setUserInfo(mSUI);
+            mSessionController.connect();
         }
 
         else if (v == mRunButton) {

@@ -2,11 +2,11 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:orientation="vertical">
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="wrap_content">
 
         <Button
             android:id="@+id/upbutton"
@@ -14,12 +14,44 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:text="@string/up" />
+        <Button
+            android:id="@+id/connectbutton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="connect"
+            android:layout_alignParentTop="true"
+            android:layout_toRightOf="@+id/upbutton" />
+        <TextView
+            android:id="@+id/statetextview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="connected"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true" />
     </RelativeLayout>
 
-    <ListView
-        android:id="@+id/listview"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" >
-    </ListView>
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="top"
+        android:layout_weight=".1">
+
+        <ListView
+            android:id="@+id/listview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"></ListView>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="top"
+        android:layout_weight=".1">
+
+        <ListView
+            android:id="@+id/remotelistview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"></ListView>
+    </LinearLayout>
 
 </LinearLayout>
