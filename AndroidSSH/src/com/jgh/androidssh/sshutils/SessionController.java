@@ -37,9 +37,21 @@ public class SessionController {
      *
      */
     private Session mSession;
+    /**
+     *
+     */
     private SessionUserInfo mSessionUserInfo;
+    /**
+     *
+     */
     private ChannelExec mChannelExec;
+    /**
+     *
+     */
     private Thread mThread;
+    /**
+     *
+     */
     private SftpController mSftpController;
 
     private static SessionController sSessionController;
@@ -182,8 +194,9 @@ public class SessionController {
     }
 
 
-
-
+    /**
+     *
+     */
     public void disconnect(){
         if(mSession != null){
             mSession.disconnect();
@@ -199,9 +212,11 @@ public class SessionController {
     }
 
 
-
-
-
+    /**
+     *
+     * @param command
+     * @return
+     */
     public boolean executeCommand(String command){
         if(mSession == null || !mSession.isConnected()){
             return false;

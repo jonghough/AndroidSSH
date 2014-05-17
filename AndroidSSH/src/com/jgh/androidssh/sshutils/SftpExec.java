@@ -4,7 +4,9 @@ import android.content.Context;
 import android.util.Log;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Properties;
 import java.util.Vector;
 
@@ -68,7 +70,7 @@ public class SftpExec implements SshExecutor {
             session.connect();
         }
 
-        if(true||mMainChannel == null || mMainChannel.isClosed()){
+        if(mMainChannel == null || mMainChannel.isClosed()){
             Channel channel = session.openChannel("sftp");
 
             mMainChannel = (ChannelSftp)channel;
@@ -84,7 +86,20 @@ public class SftpExec implements SshExecutor {
         return mRemoteFiles;
     }
 
+    public void downloadFile(Session session, String srcPath, FileOutputStream out, SftpProgressMonitor spm) throws JSchException, SftpException{
+        if(session == null || !session.isConnected()){
+            session.connect();
+        }
+        if(mMainChannel == null || mMainChannel.isClosed()){
+            Channel channel = session.openChannel("sftp");
 
+            mMainChannel = (ChannelSftp)channel;
+            mMainChannel.connect();
+
+            mMainChannel.get(srcPath,out , spm);
+        }
+
+    }
     
     /**
      *Creates a connection and sequentially transfers each file.
