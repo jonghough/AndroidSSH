@@ -47,7 +47,7 @@ public class MainActivity extends Activity implements OnClickListener {
         mHostEdit = (EditText) findViewById(R.id.hostname);
         mPasswordEdit = (EditText) findViewById(R.id.password);
         mButton = (Button) findViewById(R.id.enterbutton);
-        mEndSessionBtn = (Button) findViewById(R.id.endsessionbutton);
+        mEndSessionBtn = null;//(Button) findViewById(R.id.endsessionbutton);
         mSftpButton = (Button) findViewById(R.id.sftpbutton);
         mRunButton = (Button) findViewById(R.id.runbutton);
         mTextView = (TextView) findViewById(R.id.sshtext);
@@ -55,7 +55,7 @@ public class MainActivity extends Activity implements OnClickListener {
 
         // set onclicklistener
         mButton.setOnClickListener(this);
-        mEndSessionBtn.setOnClickListener(this);
+     //   mEndSessionBtn.setOnClickListener(this);
         mRunButton.setOnClickListener(this);
         mSftpButton.setOnClickListener(this);
 

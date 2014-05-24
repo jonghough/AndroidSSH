@@ -6,17 +6,22 @@ import android.util.Log;
 
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelSftp;
+import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
+import com.jcraft.jsch.SftpException;
 import com.jcraft.jsch.SftpProgressMonitor;
 import com.jgh.androidssh.FileListActivity;
 import com.jgh.androidssh.adapters.RemoteFileListAdapter;
 
+import java.io.FileOutputStream;
 import java.util.Vector;
 
 /**
- * Created by jon on 4/19/14.
+ * Created by Jon Hough on 4/19/14.
  */
 public class SftpController {
+
+    public static final String TAG = "SftpController";
 
     private String mCurrentPath;
 
@@ -53,14 +58,10 @@ public class SftpController {
         new LsTask(session, taskCallbackHandler).execute();
     }
 
-    public void getRemoteFiles(Session session, TaskCallbackHandler taskCallbackHandler, String path){
-        mCurrentPath = path == null ? "": path+"/";
-        new LsTask(session, taskCallbackHandler).execute();
-    }
 
 
     /**
-     *
+     *Shows all files (command ls) including directories.
      */
     private class LsTask extends AsyncTask<Void,Void,Boolean> {
         RemoteFileListAdapter mfileListAdapter;
@@ -84,7 +85,7 @@ public class SftpController {
         protected Boolean doInBackground(Void... voids) {
             Boolean success = false;
 
-            Log.v("sftpcontroller", "current path is ..................... "+mCurrentPath);
+            Log.v(TAG, "current path is ..................... "+mCurrentPath);
 
             Channel channel = null;
             try{
@@ -96,20 +97,20 @@ public class SftpController {
                     ChannelSftp channelsftp = (ChannelSftp)channel;
                     mRemoteFiles = channelsftp.ls("/"+mCurrentPath);
                     if(mRemoteFiles ==null){
-                        Log.v("SESSIONCONTROLLER"," remote file list is null");
+                        Log.v(TAG," remote file list is null");
                     }
                     // Log.v("SFTPEXEC", "REMOTE FILE SIZE " + mRemoteFiles.size());
                     else{
                         for(ChannelSftp.LsEntry e : mRemoteFiles){
 
-                            Log.v("SFTPEXEC"," file "+ e.getFilename());
+                            Log.v(TAG," file "+ e.getFilename());
                         }
 
                     }
                 }
             }
             catch(Exception e){
-                Log.v("SESSIONCONTROLLER", "sftprunnable exptn "+e.getCause());
+                Log.v(TAG, "sftprunnable exptn "+e.getCause());
                 success = false;
                 return success;
             }
@@ -136,10 +137,63 @@ public class SftpController {
         }
     }
 
+    public void downloadFile(Session session, String srcPath, String out, SftpProgressMonitor spm) throws JSchException, SftpException {
+        if(session == null || !session.isConnected()){
+            session.connect();
+        }
+
+        Channel channel = session.openChannel("sftp");
+        ChannelSftp sftpChannel = (ChannelSftp)channel;
+        sftpChannel.connect();
+
+        sftpChannel.get(srcPath,out , spm, ChannelSftp.OVERWRITE);
 
 
+    }
 
-    private class GetTask extends AsyncTask<Void,Void,Boolean> {
+    /**
+     * Task for downloading remote file (sftp get).
+     */
+    public class DownloadTask extends AsyncTask<Void,Void,Boolean> {
+
+        Session mSession;
+        String mSrcPath;
+        String mOut;
+        SftpProgressMonitor mSpm;
+        public DownloadTask(Session session, String srcPath, String out, SftpProgressMonitor spm){
+            mSession = session;
+            mSrcPath = srcPath;
+            mOut = out;
+            mSpm = spm;
+        }
+
+        @Override
+        protected void onPreExecute(){
+
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... voids) {
+            try{
+                Log.v(TAG," path "+mSrcPath);
+            downloadFile(mSession, mSrcPath, mOut,mSpm);
+            }
+            catch(Exception e){
+               Log.v(TAG,"EXCEPTION "+e.getMessage());
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean success) {
+            if(success){
+                //Need to close progress dialog.
+
+            }
+        }
+    }
+
+    public class GetTask extends AsyncTask<Void,Void,Boolean> {
         RemoteFileListAdapter mfileListAdapter;
         Context mContext;
         Vector<ChannelSftp.LsEntry> mRemoteFiles;
@@ -163,7 +217,7 @@ public class SftpController {
         protected Boolean doInBackground(Void... voids) {
             Boolean success = false;
 
-            Log.v("sftpcontroller", "current path is ..................... "+mCurrentPath);
+            Log.v(TAG, "current path is ..................... "+mCurrentPath);
 
             Channel channel = null;
             try{
@@ -179,7 +233,7 @@ public class SftpController {
                 }
             }
             catch(Exception e){
-                Log.v("SESSIONCONTROLLER", "sftprunnable exptn "+e.getCause());
+                Log.v(TAG, "sftprunnable exptn "+e.getCause());
                 success = false;
                 return success;
             }

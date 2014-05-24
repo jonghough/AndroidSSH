@@ -1,6 +1,7 @@
 package com.jgh.androidssh;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Vector;
@@ -368,7 +369,34 @@ public class FileListActivity extends Activity implements OnItemClickListener, O
             }
             else{
 
+                // sftp the file
+                SftpProgressDialog progressDialog = new SftpProgressDialog(FileListActivity.this, 0);
+                progressDialog.setIndeterminate(false);
+                progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+                progressDialog.show();
 
+                File[] arr = {mFilenames.get(position)};
+                SftpExec exec = new SftpExec(arr, progressDialog);
+                FileOutputStream fos = null;
+                try{
+                    new FileOutputStream(new File(Environment.getExternalStorageDirectory()+"/"));
+                }catch(IOException e){
+
+                }
+                try{
+                    String name = mRemoteFileListAdapter.getRemoteFiles().get(position).getFilename();
+                    String out = Environment.getExternalStorageDirectory()+"/"+name;
+
+                    Log.v("FILELISTACTIVITY","DOWNLOAING HERE"+out);
+                // exec.downloadFile(FileListActivity.this.mSessionController.getSession(), mRemoteFileListAdapter.getRemoteFiles().get(position).getFilename(),fos,progressDialog);
+                mSessionController.downloadFile(mRemoteFileListAdapter.getRemoteFiles().get(position).getFilename(),out,progressDialog);
+                }
+                catch(JSchException je){
+
+                }
+                catch(SftpException se){
+
+                }
             }
 
 

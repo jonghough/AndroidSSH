@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -170,6 +171,14 @@ public class SessionController {
     }
 
 
+    public boolean downloadFile(String srcPath, String out, SftpProgressMonitor spm) throws JSchException, SftpException{
+        if(mSftpController == null){
+            mSftpController = new SftpController();
+
+        }
+        mSftpController. new DownloadTask(mSession, srcPath,out,spm).execute();
+        return true;
+    }
     /**
      *
      * @param taskCallbackHandler

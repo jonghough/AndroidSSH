@@ -14,6 +14,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:text="@string/up" />
+
         <Button
             android:id="@+id/connectbutton"
             android:layout_width="wrap_content"
@@ -21,6 +22,7 @@
             android:text="connect"
             android:layout_alignParentTop="true"
             android:layout_toRightOf="@+id/upbutton" />
+
         <TextView
             android:id="@+id/statetextview"
             android:layout_width="wrap_content"
@@ -34,7 +36,9 @@
         android:layout_width="fill_parent"
         android:layout_height="match_parent"
         android:layout_gravity="top"
-        android:layout_weight=".1">
+        android:layout_weight=".4">
+
+
 
         <ListView
             android:id="@+id/listview"
@@ -44,9 +48,16 @@
 
     <LinearLayout
         android:layout_width="fill_parent"
+        android:layout_height="50dp"
+        android:layout_gravity="top"
+        android:layout_weight=".2" />
+
+
+    <LinearLayout
+        android:layout_width="fill_parent"
         android:layout_height="match_parent"
         android:layout_gravity="top"
-        android:layout_weight=".1">
+        android:layout_weight=".4">
 
         <ListView
             android:id="@+id/remotelistview"
