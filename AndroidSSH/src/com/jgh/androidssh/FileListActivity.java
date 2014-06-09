@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.Vector;
 
 import com.jcraft.jsch.ChannelSftp;
-import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpException;
 import com.jcraft.jsch.SftpProgressMonitor;
@@ -157,8 +156,8 @@ public class FileListActivity extends Activity implements OnItemClickListener, O
             progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
 
             File[] arr = {mFilenames.get(position)};
-            SftpExec exec = new SftpExec(arr, progressDialog);
-            new SFTPTask(this, exec, progressDialog).execute();
+            //SftpExec exec = new SftpExec(arr, progressDialog);
+           mSessionController.uploadFiles(arr, progressDialog);
         }
 
     }
@@ -187,7 +186,7 @@ public class FileListActivity extends Activity implements OnItemClickListener, O
 
     private void showRemoteFiles(){
         try {
-            mSessionController.openChannel(new TaskCallbackHandler() {
+            mSessionController.listRemoteFiles(new TaskCallbackHandler() {
                 @Override
                 public void onFail() {
                     //nothing
@@ -207,7 +206,7 @@ public class FileListActivity extends Activity implements OnItemClickListener, O
         }
     }
 
-    public class SFTPTask extends AsyncTask<Void, Void, Boolean> {
+  /*  public class SFTPTask extends AsyncTask<Void, Void, Boolean> {
 
         private SshExecutor mEx;
 
@@ -217,7 +216,7 @@ public class FileListActivity extends Activity implements OnItemClickListener, O
         // Constructor
         //
 
-        public SFTPTask(Context context, SshExecutor exec, SftpProgressDialog spd) {
+      /*  public SFTPTask(Context context, SshExecutor exec, SftpProgressDialog spd) {
             mEx = exec;
             mProgressDialog = spd;
 
@@ -247,12 +246,12 @@ public class FileListActivity extends Activity implements OnItemClickListener, O
             // TODO: if fail explain to user
             mProgressDialog.dismiss();
             getWindow().addFlags(LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON);
-        }
+        }*/
 
         /**
          *
          */
-        private boolean upload() {
+     /*   private boolean upload() {
 
             boolean success = true;
 
@@ -268,7 +267,7 @@ public class FileListActivity extends Activity implements OnItemClickListener, O
 
             return success;
         }
-    }
+    }*/
 
     private class SftpProgressDialog extends ProgressDialog implements SftpProgressMonitor {
 
@@ -346,7 +345,7 @@ public class FileListActivity extends Activity implements OnItemClickListener, O
 
                 try {
                     mIsProcessing = true;
-                    mSessionController.openChannel( new TaskCallbackHandler() {
+                    mSessionController.listRemoteFiles(new TaskCallbackHandler() {
                         @Override
                         public void onFail() {
                             mIsProcessing = false;

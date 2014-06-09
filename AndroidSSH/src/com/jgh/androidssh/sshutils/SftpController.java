@@ -3,6 +3,7 @@ package com.jgh.androidssh.sshutils;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.view.WindowManager;
 
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelSftp;
@@ -11,9 +12,12 @@ import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpException;
 import com.jcraft.jsch.SftpProgressMonitor;
 import com.jgh.androidssh.FileListActivity;
+import com.jgh.androidssh.R;
 import com.jgh.androidssh.adapters.RemoteFileListAdapter;
 
+import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Vector;
 
 /**
@@ -51,6 +55,91 @@ public class SftpController {
             mCurrentPath = relPath;
         }
         else mCurrentPath += relPath;
+    }
+
+
+    public class UploadTask extends AsyncTask<Void, Void, Boolean> {
+
+        private Session mSession;
+
+        private SftpProgressMonitor mProgressDialog;
+
+        private File[] mLocalFiles;
+
+        //
+        // Constructor
+        //
+
+        public UploadTask(Session session, File[] localFiles,  SftpProgressMonitor spd) {
+
+            mProgressDialog = spd;
+            mLocalFiles = localFiles;
+            mSession = session;
+
+        }
+
+        @Override
+        protected void onPreExecute() {
+
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... voids) {
+
+            boolean success = upload(mSession, mLocalFiles, mProgressDialog);
+
+            return success;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean b) {
+            // TODO: if fail explain to user
+
+
+        }
+
+        /**
+         *
+         */
+        private boolean upload(Session session, File[] localFiles,  SftpProgressMonitor spd) {
+
+            boolean success = true;
+
+            try {
+                uploadFiles(mSession, mLocalFiles, mProgressDialog);
+            } catch (JSchException e) {
+                success = false;
+                e.printStackTrace();
+            } catch (IOException e) {
+                success = false;
+                e.printStackTrace();
+            } catch (SftpException se){
+                success = false;
+            }
+
+            return success;
+        }
+    }
+
+    public void uploadFiles(Session session, File[] localFiles, SftpProgressMonitor spm) throws JSchException, IOException, SftpException {
+        if(session == null || !session.isConnected()){
+            session.connect();
+        }
+
+        Channel channel = session.openChannel("sftp");
+
+        channel.setInputStream(null);
+
+        channel.connect();
+        ChannelSftp channelSftp = (ChannelSftp)channel;
+
+
+        for (File file : localFiles) {
+
+             channelSftp.put(file.getPath(), file.getName(),spm, ChannelSftp.APPEND);
+
+        }
+
     }
 
     public void lsRemoteFiles(Session session,TaskCallbackHandler taskCallbackHandler, String path){

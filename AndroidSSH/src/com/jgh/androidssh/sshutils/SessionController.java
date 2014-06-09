@@ -170,7 +170,29 @@ public class SessionController {
         }
     }
 
+    /**
+     * Uploads files to remote server.
+     * @param files
+     * @param spm
+     */
+    public void uploadFiles(File[] files, SftpProgressMonitor spm){
+        if(mSftpController == null){
+            mSftpController = new SftpController();
 
+        }
+        mSftpController. new UploadTask(mSession, files, spm).execute();
+    }
+
+
+    /**
+     * Downloads file from remote server.
+     * @param srcPath
+     * @param out
+     * @param spm
+     * @return
+     * @throws JSchException
+     * @throws SftpException
+     */
     public boolean downloadFile(String srcPath, String out, SftpProgressMonitor spm) throws JSchException, SftpException{
         if(mSftpController == null){
             mSftpController = new SftpController();
@@ -186,7 +208,7 @@ public class SessionController {
      * @throws JSchException
      * @throws SftpException
      */
-    public void openChannel(TaskCallbackHandler taskCallbackHandler, String path) throws JSchException, SftpException{
+    public void listRemoteFiles(TaskCallbackHandler taskCallbackHandler, String path) throws JSchException, SftpException{
 
         if(mSession == null || !mSession.isConnected()){
             return;
