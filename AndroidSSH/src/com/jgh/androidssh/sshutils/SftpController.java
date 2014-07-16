@@ -58,6 +58,9 @@ public class SftpController {
     }
 
 
+    /**
+     * Upload file(s) Task.
+     */
     public class UploadTask extends AsyncTask<Void, Void, Boolean> {
 
         private Session mSession;
@@ -127,17 +130,12 @@ public class SftpController {
         }
 
         Channel channel = session.openChannel("sftp");
-
         channel.setInputStream(null);
-
         channel.connect();
         ChannelSftp channelSftp = (ChannelSftp)channel;
 
-
         for (File file : localFiles) {
-
              channelSftp.put(file.getPath(), file.getName(),spm, ChannelSftp.APPEND);
-
         }
 
     }
@@ -264,8 +262,9 @@ public class SftpController {
         @Override
         protected Boolean doInBackground(Void... voids) {
             try{
+
+            downloadFile(mSession, "/"+mSrcPath, mOut,mSpm);
                 Log.v(TAG," path "+mSrcPath);
-            downloadFile(mSession, mSrcPath, mOut,mSpm);
             }
             catch(Exception e){
                Log.v(TAG,"EXCEPTION "+e.getMessage());
@@ -275,6 +274,7 @@ public class SftpController {
 
         @Override
         protected void onPostExecute(Boolean success) {
+            if(success == null) return;
             if(success){
                 //Need to close progress dialog.
 
@@ -317,8 +317,6 @@ public class SftpController {
                     channel.connect();
                     ChannelSftp channelsftp = (ChannelSftp)channel;
                     channelsftp.get(mCurrentPath, mSftpProgressMonitor);
-
-
                 }
             }
             catch(Exception e){

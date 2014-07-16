@@ -55,6 +55,9 @@ public class SessionController {
      */
     private SftpController mSftpController;
 
+    /**
+     *  Instance
+     */
     private static SessionController sSessionController;
 
 

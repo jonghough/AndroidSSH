@@ -92,7 +92,7 @@ public class FileListActivity extends Activity implements OnItemClickListener, O
         mConnectButton = (Button) findViewById(R.id.connectbutton);
         mConnectButton.setOnClickListener(this);
 
-        mStateView = (TextView)findViewById(R.id.statetextview);
+        mStateView = (TextView) findViewById(R.id.statetextview);
 
 
         SessionUserInfo sui = new SessionUserInfo(mUserInfo[0], mUserInfo[1], mUserInfo[2]);
@@ -102,12 +102,11 @@ public class FileListActivity extends Activity implements OnItemClickListener, O
         mRemoteClickListener = new RemoteClickListener();
         mRemoteListView.setOnItemClickListener(mRemoteClickListener);
 
-        if(mSessionController.getSession().isConnected()){
+        if (mSessionController.getSession().isConnected()) {
             mStateView.setText("Connected");
             showRemoteFiles();
 
-        }
-        else{
+        } else {
             mStateView.setText("Disconnected");
         }
 
@@ -157,7 +156,7 @@ public class FileListActivity extends Activity implements OnItemClickListener, O
 
             File[] arr = {mFilenames.get(position)};
             //SftpExec exec = new SftpExec(arr, progressDialog);
-           mSessionController.uploadFiles(arr, progressDialog);
+            mSessionController.uploadFiles(arr, progressDialog);
         }
 
     }
@@ -184,7 +183,7 @@ public class FileListActivity extends Activity implements OnItemClickListener, O
 
     }
 
-    private void showRemoteFiles(){
+    private void showRemoteFiles() {
         try {
             mSessionController.listRemoteFiles(new TaskCallbackHandler() {
                 @Override
@@ -248,9 +247,9 @@ public class FileListActivity extends Activity implements OnItemClickListener, O
             getWindow().addFlags(LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON);
         }*/
 
-        /**
-         *
-         */
+    /**
+     *
+     */
      /*   private boolean upload() {
 
             boolean success = true;
@@ -330,7 +329,7 @@ public class FileListActivity extends Activity implements OnItemClickListener, O
 
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-            if(mIsProcessing){
+            if (mIsProcessing) {
                 return;
             }
             Log.v("FIULELISTACTIVITY", "TRYING TO OPEN DIRECTORY ");
@@ -365,8 +364,7 @@ public class FileListActivity extends Activity implements OnItemClickListener, O
                     Log.v("FILELIST", "SFTPEX: " + s.getMessage() + ", " + s.getCause());
                 }
 
-            }
-            else{
+            } else {
 
                 // sftp the file
                 SftpProgressDialog progressDialog = new SftpProgressDialog(FileListActivity.this, 0);
@@ -374,27 +372,19 @@ public class FileListActivity extends Activity implements OnItemClickListener, O
                 progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
                 progressDialog.show();
 
-                File[] arr = {mFilenames.get(position)};
-                SftpExec exec = new SftpExec(arr, progressDialog);
-                FileOutputStream fos = null;
-                try{
-                    new FileOutputStream(new File(Environment.getExternalStorageDirectory()+"/"));
-                }catch(IOException e){
+                //File[] arr = {mFilenames.get(position)};
+                //SftpExec exec = new SftpExec(arr, progressDialog);
 
-                }
-                try{
+                try {
                     String name = mRemoteFileListAdapter.getRemoteFiles().get(position).getFilename();
-                    String out = Environment.getExternalStorageDirectory()+"/"+name;
+                    String out = mRootFile.getAbsolutePath() + "/" + name;
 
-                    Log.v("FILELISTACTIVITY","DOWNLOAING HERE"+out);
-                // exec.downloadFile(FileListActivity.this.mSessionController.getSession(), mRemoteFileListAdapter.getRemoteFiles().get(position).getFilename(),fos,progressDialog);
-                mSessionController.downloadFile(mRemoteFileListAdapter.getRemoteFiles().get(position).getFilename(),out,progressDialog);
-                }
-                catch(JSchException je){
-
-                }
-                catch(SftpException se){
-
+                    Log.v("FILELISTACTIVITY", "DOWNLOAING HERE" + out);
+                    mSessionController.downloadFile(mRemoteFileListAdapter.getRemoteFiles().get(position).getFilename(), out, progressDialog);
+                } catch (JSchException je) {
+                        Log.v("FILELSITACTIVITY", "JSCH EXPTN "+je.getMessage());
+                } catch (SftpException se) {
+                    Log.v("FILELSITACTIVITY", "SFTP EXPTN "+se.getMessage());
                 }
             }
 
