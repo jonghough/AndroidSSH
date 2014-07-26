@@ -5,6 +5,7 @@ import java.io.IOException;
 
 import com.jcraft.jsch.JSchException;
 import com.jgh.androidssh.sshutils.CommandExec;
+import com.jgh.androidssh.sshutils.ExecTaskCallbackHandler;
 import com.jgh.androidssh.sshutils.SessionUserInfo;
 import com.jgh.androidssh.sshutils.SshExecutor;
 import com.jgh.androidssh.sshutils.SessionController;
@@ -14,6 +15,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
@@ -29,7 +31,7 @@ public class MainActivity extends Activity implements OnClickListener {
     private EditText mHostEdit;
     private EditText mPasswordEdit;
     private EditText mCommandEdit;
-    private Button mButton, mEndSessionBtn, mRunButton, mSftpButton;
+    private Button mButton, mEndSessionBtn, mSftpButton,mRunButton;
     private SessionUserInfo mSUI;
     private SessionController mSessionController;
     private CommandExec mComEx;
@@ -47,7 +49,7 @@ public class MainActivity extends Activity implements OnClickListener {
         mHostEdit = (EditText) findViewById(R.id.hostname);
         mPasswordEdit = (EditText) findViewById(R.id.password);
         mButton = (Button) findViewById(R.id.enterbutton);
-        mEndSessionBtn = null;//(Button) findViewById(R.id.endsessionbutton);
+        mEndSessionBtn = (Button) findViewById(R.id.endsessionbutton);
         mSftpButton = (Button) findViewById(R.id.sftpbutton);
         mRunButton = (Button) findViewById(R.id.runbutton);
         mTextView = (TextView) findViewById(R.id.sshtext);
@@ -55,7 +57,7 @@ public class MainActivity extends Activity implements OnClickListener {
 
         // set onclicklistener
         mButton.setOnClickListener(this);
-     //   mEndSessionBtn.setOnClickListener(this);
+        mEndSessionBtn.setOnClickListener(this);
         mRunButton.setOnClickListener(this);
         mSftpButton.setOnClickListener(this);
 
@@ -203,9 +205,25 @@ public class MainActivity extends Activity implements OnClickListener {
 
             // run command
             else {
+
+
                 // get the last line of terminal
                 String command = getLastLine();
-                if (mSUI != null) {
+                ExecTaskCallbackHandler t = new ExecTaskCallbackHandler() {
+                    @Override
+                    public void onFail() {
+                        makeToast(R.string.taskfail);
+                    }
+
+                    @Override
+                    public void onComplete(String completeString) {
+                        mTextView.setText(mTextView.getText() + "\n" + completeString
+                                + mUserEdit.getText().toString().trim() + "\n");
+                    }
+                };
+
+                mSessionController.executeCommand(this,t, command);
+                /*if (mSUI != null) {
                     if(mComEx == null)
                         mComEx = new CommandExec();
                        
@@ -215,7 +233,7 @@ public class MainActivity extends Activity implements OnClickListener {
                 } else {
                     makeToast(R.string.insertallvalues);
                     return;
-                }
+                }*/
 
             }
 
@@ -223,12 +241,14 @@ public class MainActivity extends Activity implements OnClickListener {
 
         else if (v == mSftpButton) {
             if (mSUI != null) {
-                startSftpActivity();
+
+               startSftpActivity();
+
             }
         }
         else if (v == this.mEndSessionBtn){
-            //if(mComEx!=null)
-              //  mSessionController.disconnect();
+            if(mComEx!=null)
+              mSessionController.disconnect();
         }
 
     }

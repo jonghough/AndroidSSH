@@ -14,7 +14,8 @@ import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 
 /**
- * A class to allow shell commands to be sent to the remote server.
+ * A class to allow shell commands to be sent to the remote server,
+ * using Jsch ChannelExec channel.
  * 
  * @author Jonathan Hough
  * @since December 2 2012

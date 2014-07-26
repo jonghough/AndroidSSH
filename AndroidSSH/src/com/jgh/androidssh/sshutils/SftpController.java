@@ -224,6 +224,17 @@ public class SftpController {
         }
     }
 
+
+    /**
+     * Downloads the remote file at srcPath location on remote host, to the out
+     * location on local device.
+     * @param session
+     * @param srcPath
+     * @param out
+     * @param spm
+     * @throws JSchException
+     * @throws SftpException
+     */
     public void downloadFile(Session session, String srcPath, String out, SftpProgressMonitor spm) throws JSchException, SftpException {
         if(session == null || !session.isConnected()){
             session.connect();
