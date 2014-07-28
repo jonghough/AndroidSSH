@@ -107,7 +107,7 @@
                 android:background="#FF010101"
                 android:textColor="#FF00FF00" />
 
-            <EditText
+            <com.jgh.androidssh.SshEditText
                 android:id="@+id/command"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

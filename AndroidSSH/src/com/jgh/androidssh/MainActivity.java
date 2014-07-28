@@ -4,7 +4,6 @@ package com.jgh.androidssh;
 import java.io.IOException;
 
 import com.jcraft.jsch.JSchException;
-import com.jgh.androidssh.sshutils.CommandExec;
 import com.jgh.androidssh.sshutils.ExecTaskCallbackHandler;
 import com.jgh.androidssh.sshutils.SessionUserInfo;
 import com.jgh.androidssh.sshutils.SshExecutor;
@@ -16,8 +15,8 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
-import android.util.Log;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
@@ -26,17 +25,21 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+/**
+ * Main activity. Connect to SSH server and launch command shell.
+ *
+ * @author Jon Hough
+ */
 public class MainActivity extends Activity implements OnClickListener {
 
     private TextView mTextView;
     private EditText mUserEdit;
     private EditText mHostEdit;
     private EditText mPasswordEdit;
-    private EditText mCommandEdit;
+    private SshEditText mCommandEdit;
     private Button mButton, mEndSessionBtn, mSftpButton,mRunButton;
     private SessionUserInfo mSUI;
     private SessionController mSessionController;
-    private CommandExec mComEx;
 
     private Handler mHandler;
 
@@ -57,7 +60,7 @@ public class MainActivity extends Activity implements OnClickListener {
         mSftpButton = (Button) findViewById(R.id.sftpbutton);
         mRunButton = (Button) findViewById(R.id.runbutton);
         mTextView = (TextView) findViewById(R.id.sshtext);
-        mCommandEdit = (EditText) findViewById(R.id.command);
+        mCommandEdit = (SshEditText) findViewById(R.id.command);
 
         // set onclicklistener
         mButton.setOnClickListener(this);
@@ -67,6 +70,23 @@ public class MainActivity extends Activity implements OnClickListener {
 
         mHandler = new Handler();
 
+        //text change listener, for getting the current input changes.
+        mCommandEdit.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
     }
 
     /**
@@ -252,10 +272,11 @@ public class MainActivity extends Activity implements OnClickListener {
             }
         }
         else if (v == this.mEndSessionBtn){
-            if(mComEx!=null)
               mSessionController.disconnect();
         }
 
     }
+
+
 
 }
