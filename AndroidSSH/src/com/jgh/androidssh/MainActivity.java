@@ -15,6 +15,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -35,7 +37,9 @@ public class MainActivity extends Activity implements OnClickListener {
     private SessionUserInfo mSUI;
     private SessionController mSessionController;
     private CommandExec mComEx;
-    
+
+    private Handler mHandler;
+
     @Override
     public void onCreate(Bundle bundle) {
         super.onCreate(bundle);
@@ -61,6 +65,7 @@ public class MainActivity extends Activity implements OnClickListener {
         mRunButton.setOnClickListener(this);
         mSftpButton.setOnClickListener(this);
 
+        mHandler = new Handler();
 
     }
 
@@ -222,7 +227,7 @@ public class MainActivity extends Activity implements OnClickListener {
                     }
                 };
 
-                mSessionController.executeCommand(this,t, command);
+                mSessionController.executeCommand(mHandler, mCommandEdit,t, command);
                 /*if (mSUI != null) {
                     if(mComEx == null)
                         mComEx = new CommandExec();

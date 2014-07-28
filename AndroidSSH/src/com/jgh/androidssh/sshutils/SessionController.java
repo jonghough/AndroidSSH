@@ -2,10 +2,17 @@ package com.jgh.androidssh.sshutils;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.os.Handler;
 import android.util.Log;
+import android.widget.EditText;
+
+import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.lang.InterruptedException;
 
@@ -27,9 +34,8 @@ import java.util.Vector;
 /**
  * Controller for Jsch SSH sessions. All SSH
  * connections are run through this class.
- *
+ * <p/>
  * Created by Jon Hough on 3/25/14.
- *
  */
 public class SessionController {
 
@@ -54,6 +60,7 @@ public class SessionController {
      */
     private SftpController mSftpController;
 
+    private ShellController mShellController;
     /**
      * Instance
      */
@@ -239,17 +246,23 @@ public class SessionController {
     }
 
 
-
     /**
      * Execute command on remote server
+     *
      * @param command
      * @return
      */
-    public boolean executeCommand(Context context, ExecTaskCallbackHandler callback, String command) {
+    public boolean executeCommand(Handler handler, EditText editText, ExecTaskCallbackHandler callback, String command) {
         if (mSession == null || !mSession.isConnected()) {
             return false;
         } else {
             try {
+                mShellController = new ShellController(this);
+                mShellController.openShell(handler, editText);
+            } catch (Exception e) {
+            }
+            return true;
+           /* try {
                 if (mChannelExec == null || mChannelExec.isClosed()) {
                     mChannelExec = (ChannelExec) mSession.openChannel("Exec");
                 }
@@ -263,21 +276,7 @@ public class SessionController {
                 Log.e("SessionController", "Fail to complete command");
                 return false;
             }
-            return true;
-        }
-    }
-
-
-    public void openShell(InputStream in, OutputStream out) {
-
-        try {
-            Channel channel = mSession.openChannel("shell");
-            channel.setInputStream(in);
-            channel.setOutputStream(out);
-            channel.connect();
-        } catch (JSchException jex) {
-            Log.e("SessionController", "Fail to do command");
-
+            return true;*/
         }
     }
 
@@ -312,8 +311,6 @@ public class SessionController {
     }
 
 
-
-
     public class ExecSshTask extends AsyncTask<Void, Void, Boolean> {
 
         private SshExecutor mSshExecutor;
@@ -342,11 +339,11 @@ public class SessionController {
             try {
                 mSshExecutor.executeCommand(getSession());
             } catch (JSchException e) {
-                if(mTaskCallbackHandler != null)
+                if (mTaskCallbackHandler != null)
                     mTaskCallbackHandler.onFail();
-               // makeToast(R.string.taskfail);
+                // makeToast(R.string.taskfail);
             } catch (IOException e) {
-                if(mTaskCallbackHandler != null)
+                if (mTaskCallbackHandler != null)
                     mTaskCallbackHandler.onFail();
             }
             success = true;
@@ -357,16 +354,56 @@ public class SessionController {
         protected void onPostExecute(Boolean b) {
 
             if (b) {
-                if(mTaskCallbackHandler != null)mTaskCallbackHandler.onComplete(mSshExecutor.getString()+"\n");
+                if (mTaskCallbackHandler != null)
+                    mTaskCallbackHandler.onComplete(mSshExecutor.getString() + "\n");
 
-            }
-            else {
-                if(mTaskCallbackHandler != null)
+            } else {
+                if (mTaskCallbackHandler != null)
                     mTaskCallbackHandler.onFail();
             }
 
         }
     }
 
+
+    /**
+     * Opens shell channel with the current sesison and opens input and output streams with remote server.
+     * This method is only used for testing. Remove later.
+     * @throws JSchException
+     * @throws IOException
+     */
+    public void openShell() throws JSchException, IOException {
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                try {
+                    Channel channel = mSession.openChannel("shell");
+                    channel.connect();
+
+                    BufferedReader input;
+                    input = new BufferedReader(new InputStreamReader(channel.getInputStream()));
+                    DataOutputStream output = new DataOutputStream(channel.getOutputStream());
+
+
+                    output.writeBytes("ls\r\n");
+                    output.flush();
+
+
+                    String line = input.readLine();
+                    String result = line + "\n";
+
+                    while ((line = input.readLine()) != null) {
+                        result += line + "\n";
+                        Log.v("TAG", "Line: " + line);
+                    }
+                } catch (Exception e) {
+                    Log.v("EXECPTION", " EX " + e.getMessage());
+                }
+
+            }
+        }).start();
+    }
 
 }
