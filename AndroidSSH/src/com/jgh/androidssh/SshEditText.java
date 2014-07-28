@@ -26,6 +26,7 @@ public class SshEditText extends EditText {
 
     @Override
     protected void onSelectionChanged(int s, int e){
+        //force selection to end
         setSelection(this.length());
     }
 }
