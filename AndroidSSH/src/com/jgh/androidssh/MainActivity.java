@@ -4,6 +4,7 @@ package com.jgh.androidssh;
 import java.io.IOException;
 
 import com.jcraft.jsch.JSchException;
+import com.jgh.androidssh.sshutils.ConnectionStatusListener;
 import com.jgh.androidssh.sshutils.ExecTaskCallbackHandler;
 import com.jgh.androidssh.sshutils.SessionUserInfo;
 import com.jgh.androidssh.sshutils.SshExecutor;
@@ -33,7 +34,7 @@ import android.widget.Toast;
  */
 public class MainActivity extends Activity implements OnClickListener {
 
-    private TextView mTextView;
+    private TextView mTextView, mConnectStatus;
     private EditText mUserEdit;
     private EditText mHostEdit;
     private EditText mPasswordEdit;
@@ -43,7 +44,7 @@ public class MainActivity extends Activity implements OnClickListener {
     private SessionController mSessionController;
 
     private Handler mHandler;
-
+    private Handler mTvHandler;
     @Override
     public void onCreate(Bundle bundle) {
         super.onCreate(bundle);
@@ -62,15 +63,17 @@ public class MainActivity extends Activity implements OnClickListener {
         mRunButton = (Button) findViewById(R.id.runbutton);
         mTextView = (TextView) findViewById(R.id.sshtext);
         mCommandEdit = (SshEditText) findViewById(R.id.command);
-
+        mConnectStatus = (TextView) findViewById(R.id.connectstatus);
         // set onclicklistener
         mButton.setOnClickListener(this);
         mEndSessionBtn.setOnClickListener(this);
         mRunButton.setOnClickListener(this);
         mSftpButton.setOnClickListener(this);
 
+        mConnectStatus.setText("Connect Status: NOT CONNECTED");
+        //handlers
         mHandler = new Handler();
-
+        mTvHandler = new Handler();
         //text change listener, for getting the current input changes.
         mCommandEdit.addTextChangedListener(new TextWatcher() {
             @Override
@@ -232,6 +235,30 @@ public class MainActivity extends Activity implements OnClickListener {
             mSessionController = SessionController.getSessionController();
             mSessionController.setUserInfo(mSUI);
             mSessionController.connect();
+
+            mSessionController.setConnectionStatusListener(new ConnectionStatusListener() {
+                @Override
+                public void onDisconnected() {
+
+                   mTvHandler.post(new Runnable() {
+                       @Override
+                       public void run() {
+                           mConnectStatus.setText("Connection Status: NOT CONNECTED");
+                       }
+                   });
+                }
+
+                @Override
+                public void onConnected() {
+                    mTvHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            mConnectStatus.setText("Connection Status: CONNECTED");
+                        }
+                    });
+                }
+            });
+
         }
 
         else if (v == mRunButton) {

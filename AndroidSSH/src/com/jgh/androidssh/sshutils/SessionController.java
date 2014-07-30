@@ -61,6 +61,8 @@ public class SessionController {
     private SftpController mSftpController;
 
     private ShellController mShellController;
+
+    private ConnectionStatusListener mConnectStatusListener;
     /**
      * Instance
      */
@@ -88,6 +90,7 @@ public class SessionController {
     private SessionController(SessionUserInfo sessionUserInfo) {
         mSessionUserInfo = sessionUserInfo;
         connect();
+
     }
 
     public void setUserInfo(SessionUserInfo sessionUserInfo) {
@@ -105,6 +108,9 @@ public class SessionController {
         }
     }
 
+    public void setConnectionStatusListener(ConnectionStatusListener csl) {
+        mConnectStatusListener = csl;
+    }
 
     private class SftpTask extends AsyncTask<Void, Void, Boolean> {
         RemoteFileListAdapter mfileListAdapter;
@@ -235,6 +241,8 @@ public class SessionController {
     public void disconnect() {
         if (mSession != null) {
             mSession.disconnect();
+            if (mConnectStatusListener != null)
+                mConnectStatusListener.onDisconnected();
         }
         if (mThread != null && mThread.isAlive()) {
             try {
@@ -275,21 +283,6 @@ public class SessionController {
         }
 
         return true;
-           /* try {
-                if (mChannelExec == null || mChannelExec.isClosed()) {
-                    mChannelExec = (ChannelExec) mSession.openChannel("Exec");
-                }
-
-                //mChannelExec.setCommand(command);
-                CommandExec mComEx = new CommandExec();
-
-                mComEx.setCommand(command);
-                new ExecSshTask(context, mComEx, callback).execute();
-            } catch (JSchException jex) {
-                Log.e("SessionController", "Fail to complete command");
-                return false;
-            }
-            return true;*/
     }
 
 
@@ -319,6 +312,24 @@ public class SessionController {
             }
 
             Log.v("SessionController", "Session !" + mSession.isConnected());
+
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    while (true) {
+                        try {
+                            Thread.sleep(2000);
+                            if (mConnectStatusListener != null) {
+                                if (mSession.isConnected()) {
+                                    mConnectStatusListener.onConnected();
+                                } else mConnectStatusListener.onDisconnected();
+                            }
+                        } catch (InterruptedException e) {
+                            //TODO
+                        }
+                    }
+                }
+            }).start();
         }
     }
 
