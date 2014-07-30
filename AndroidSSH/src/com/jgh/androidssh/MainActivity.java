@@ -17,6 +17,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
@@ -85,6 +86,22 @@ public class MainActivity extends Activity implements OnClickListener {
             @Override
             public void afterTextChanged(Editable editable) {
 
+            }
+        });
+
+        mCommandEdit.setOnKeyListener( new View.OnKeyListener() {
+            public boolean onKey( View v, int keyCode, KeyEvent event) {
+
+                if (keyCode == KeyEvent.KEYCODE_DEL)
+                {
+                    if(mCommandEdit.getCurrentCursorLine() < mCommandEdit.getLineCount()-1 ||mCommandEdit.isNewLine()){
+                        mCommandEdit.setSelection(mCommandEdit.getText().length());
+                        return true;
+                    }
+                    return false;
+                }
+
+                return false;
             }
         });
     }
@@ -246,7 +263,7 @@ public class MainActivity extends Activity implements OnClickListener {
                                 + mUserEdit.getText().toString().trim() + "\n");
                     }
                 };
-
+                mCommandEdit.AddLastInput(command);
                 mSessionController.executeCommand(mHandler, mCommandEdit,t, command);
                 /*if (mSUI != null) {
                     if(mComEx == null)

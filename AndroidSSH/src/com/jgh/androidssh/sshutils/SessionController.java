@@ -254,14 +254,27 @@ public class SessionController {
      */
     public boolean executeCommand(Handler handler, EditText editText, ExecTaskCallbackHandler callback, String command) {
         if (mSession == null || !mSession.isConnected()) {
+            Log.v("NOT CONNECTED", "NOT CONNECTED!");
             return false;
         } else {
-            try {
+
+            if (mShellController == null) {
                 mShellController = new ShellController(this);
-                mShellController.openShell(handler, editText);
-            } catch (Exception e) {
+
+                try {
+                    mShellController.openShell(handler, editText);
+                } catch (Exception e) {
+                    //TODO
+                }
             }
-            return true;
+
+            synchronized (mShellController) {
+                Log.v("COMMAND", "Command is " + command);
+                mShellController.writeToOutput(command);
+            }
+        }
+
+        return true;
            /* try {
                 if (mChannelExec == null || mChannelExec.isClosed()) {
                     mChannelExec = (ChannelExec) mSession.openChannel("Exec");
@@ -277,7 +290,6 @@ public class SessionController {
                 return false;
             }
             return true;*/
-        }
     }
 
 
@@ -363,12 +375,14 @@ public class SessionController {
             }
 
         }
+
     }
 
 
     /**
      * Opens shell channel with the current sesison and opens input and output streams with remote server.
      * This method is only used for testing. Remove later.
+     *
      * @throws JSchException
      * @throws IOException
      */
