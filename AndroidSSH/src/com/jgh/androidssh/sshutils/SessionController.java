@@ -325,7 +325,7 @@ public class SessionController {
                                 } else mConnectStatusListener.onDisconnected();
                             }
                         } catch (InterruptedException e) {
-                            //TODO
+
                         }
                     }
                 }
