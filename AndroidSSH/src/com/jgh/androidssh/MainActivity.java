@@ -18,6 +18,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -34,6 +35,7 @@ import android.widget.Toast;
  */
 public class MainActivity extends Activity implements OnClickListener {
 
+    private static final String TAG = "MainActivity";
     private TextView mTextView, mConnectStatus;
     private EditText mUserEdit;
     private EditText mHostEdit;
@@ -316,7 +318,11 @@ public class MainActivity extends Activity implements OnClickListener {
             }
         }
         else if (v == this.mEndSessionBtn){
+            try{
               mSessionController.disconnect();
+            }catch(IOException e){
+                Log.e(TAG, "Disconnect exception " + e.getMessage());
+            }
         }
 
     }

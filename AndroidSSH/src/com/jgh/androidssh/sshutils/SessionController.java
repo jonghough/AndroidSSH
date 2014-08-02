@@ -233,9 +233,10 @@ public class SessionController {
 
 
     /**
-     * Disconnects session.
+     * Disconnects session and all channels.
+     * @throws IOException
      */
-    public void disconnect() {
+    public void disconnect() throws IOException {
         if (mSession != null) {
             if(mSftpController != null){
                 mSftpController.disconnect();
