@@ -5,21 +5,13 @@ import android.os.AsyncTask;
 import android.os.Handler;
 import android.util.Log;
 import android.widget.EditText;
-
-import java.io.BufferedReader;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.lang.InterruptedException;
 
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.ChannelSftp;
-import com.jcraft.jsch.ChannelShell;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
@@ -38,6 +30,8 @@ import java.util.Vector;
  * Created by Jon Hough on 3/25/14.
  */
 public class SessionController {
+
+    private static final String TAG = "SessionController";
 
     /**
      *
@@ -128,7 +122,7 @@ public class SessionController {
         @Override
         protected void onPreExecute() {
             if (!mSession.isConnected()) {
-                Log.v("SESSIONCONTROLLER", "SESSION IS NOT CONNECTED");
+                Log.v(TAG, "SESSION IS NOT CONNECTED");
                 connect();
             }
         }
@@ -147,19 +141,17 @@ public class SessionController {
                     ChannelSftp channelsftp = (ChannelSftp) channel;
                     mRemoteFiles = channelsftp.ls("/" + mPath);
                     if (mRemoteFiles == null) {
-                        Log.v("SESSIONCONTROLLER", " remote file list is null");
-                    }
-                    // Log.v("SFTPEXEC", "REMOTE FILE SIZE " + mRemoteFiles.size());
-                    else {
+                        //do nothing
+                    } else {
                         for (ChannelSftp.LsEntry e : mRemoteFiles) {
 
-                            Log.v("SFTPEXEC", " file " + e.getFilename());
+                            // Log.v(TAG, " file " + e.getFilename());
                         }
 
                     }
                 }
             } catch (Exception e) {
-                Log.v("SESSIONCONTROLLER", "sftprunnable exptn " + e.getCause());
+                Log.e(TAG, "sftprunnable exptn " + e.getCause());
                 success = false;
                 return success;
             }
@@ -262,7 +254,6 @@ public class SessionController {
      */
     public boolean executeCommand(Handler handler, EditText editText, ExecTaskCallbackHandler callback, String command) {
         if (mSession == null || !mSession.isConnected()) {
-            Log.v("NOT CONNECTED", "NOT CONNECTED!");
             return false;
         } else {
 
@@ -277,7 +268,6 @@ public class SessionController {
             }
 
             synchronized (mShellController) {
-                Log.v("COMMAND", "Command is " + command);
                 mShellController.writeToOutput(command);
             }
         }
@@ -306,9 +296,9 @@ public class SessionController {
                 mSession.connect();
 
             } catch (JSchException jex) {
-                Log.e("SessionController", "exptn: " + jex.getMessage() + ", Fail to get session " + mSessionUserInfo.getUser() + ", " + mSessionUserInfo.getHost());
+                Log.e(TAG, "JschException: " + jex.getMessage() + ", Fail to get session " + mSessionUserInfo.getUser() + ", " + mSessionUserInfo.getHost());
             } catch (Exception ex) {
-                Log.e("SessionController", "exptn:" + ex.getMessage());
+                Log.e(TAG, "Exception:" + ex.getMessage());
             }
 
             Log.v("SessionController", "Session !" + mSession.isConnected());
@@ -390,45 +380,5 @@ public class SessionController {
     }
 
 
-    /**
-     * Opens shell channel with the current sesison and opens input and output streams with remote server.
-     * This method is only used for testing. Remove later.
-     *
-     * @throws JSchException
-     * @throws IOException
-     */
-    public void openShell() throws JSchException, IOException {
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-
-                try {
-                    Channel channel = mSession.openChannel("shell");
-                    channel.connect();
-
-                    BufferedReader input;
-                    input = new BufferedReader(new InputStreamReader(channel.getInputStream()));
-                    DataOutputStream output = new DataOutputStream(channel.getOutputStream());
-
-
-                    output.writeBytes("ls\r\n");
-                    output.flush();
-
-
-                    String line = input.readLine();
-                    String result = line + "\n";
-
-                    while ((line = input.readLine()) != null) {
-                        result += line + "\n";
-                        Log.v("TAG", "Line: " + line);
-                    }
-                } catch (Exception e) {
-                    Log.v("EXECPTION", " EX " + e.getMessage());
-                }
-
-            }
-        }).start();
-    }
 
 }

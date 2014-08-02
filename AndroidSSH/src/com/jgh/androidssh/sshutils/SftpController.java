@@ -172,7 +172,7 @@ public class SftpController {
         protected Boolean doInBackground(Void... voids) {
             Boolean success = false;
 
-            Log.v(TAG, "current path is ..................... "+mCurrentPath);
+            Log.d(TAG, "current path is "+mCurrentPath);
 
             Channel channel = null;
             try{
@@ -184,13 +184,11 @@ public class SftpController {
                     ChannelSftp channelsftp = (ChannelSftp)channel;
                     mRemoteFiles = channelsftp.ls("/"+mCurrentPath);
                     if(mRemoteFiles ==null){
-                        Log.v(TAG," remote file list is null");
+                        Log.d(TAG,"remote file list is null");
                     }
-                    // Log.v("SFTPEXEC", "REMOTE FILE SIZE " + mRemoteFiles.size());
                     else{
                         for(ChannelSftp.LsEntry e : mRemoteFiles){
-
-                            Log.v(TAG," file "+ e.getFilename());
+                            //Log.v(TAG," file "+ e.getFilename());
                         }
 
                     }
@@ -228,6 +226,7 @@ public class SftpController {
     /**
      * Downloads the remote file at srcPath location on remote host, to the out
      * location on local device.
+     * Uses SFTP get function.
      * @param session
      * @param srcPath
      * @param out
@@ -244,7 +243,9 @@ public class SftpController {
         ChannelSftp sftpChannel = (ChannelSftp)channel;
         sftpChannel.connect();
 
-        sftpChannel.get(srcPath,out , spm, ChannelSftp.OVERWRITE);
+        sftpChannel.get(srcPath, out , spm, ChannelSftp.OVERWRITE);
+
+        sftpChannel.disconnect();
 
 
     }
@@ -278,7 +279,7 @@ public class SftpController {
                 Log.v(TAG," path "+mSrcPath);
             }
             catch(Exception e){
-               Log.v(TAG,"EXCEPTION "+e.getMessage());
+               Log.e(TAG,"EXCEPTION "+e.getMessage());
             }
             return null;
         }
