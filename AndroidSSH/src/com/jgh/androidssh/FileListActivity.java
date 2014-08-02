@@ -246,10 +246,11 @@ public class FileListActivity extends Activity implements OnItemClickListener, O
         }
 
         /**
-         * Data upload is ended.
+         * Data upload is ended. Dismiss progress dialog.
          */
         public void end() {
             this.setProgress(this.getMax());
+            this.dismiss();
 
         }
 
@@ -295,6 +296,7 @@ public class FileListActivity extends Activity implements OnItemClickListener, O
                             mRemoteListView.setAdapter(mRemoteFileListAdapter);
                             mRemoteFileListAdapter.notifyDataSetChanged();
                             mIsProcessing = false;
+
                         }
                     }, mRemoteFileListAdapter.getRemoteFiles().get(position).getFilename());
                 } catch (JSchException j) {
@@ -303,7 +305,8 @@ public class FileListActivity extends Activity implements OnItemClickListener, O
                     Log.e(TAG, "Error on remote file click " + s.getMessage());
                 }
 
-            } else {
+            }
+            else {
 
                 // sftp the file
                 SftpProgressDialog progressDialog = new SftpProgressDialog(FileListActivity.this, 0);

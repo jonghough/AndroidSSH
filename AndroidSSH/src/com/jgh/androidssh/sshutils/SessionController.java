@@ -102,6 +102,10 @@ public class SessionController {
         }
     }
 
+    public SftpController getSftpController(){
+        return mSftpController;
+    }
+
     public void setConnectionStatusListener(ConnectionStatusListener csl) {
         mConnectStatusListener = csl;
     }
@@ -170,6 +174,7 @@ public class SessionController {
         }
     }
 
+
     /**
      * Uploads files to remote server.
      *
@@ -232,7 +237,14 @@ public class SessionController {
      */
     public void disconnect() {
         if (mSession != null) {
+            if(mSftpController != null){
+                mSftpController.disconnect();
+            }
+            if(mShellController != null){
+                mShellController.disconnect();
+            }
             mSession.disconnect();
+
             if (mConnectStatusListener != null)
                 mConnectStatusListener.onDisconnected();
         }

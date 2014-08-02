@@ -29,35 +29,36 @@ public class SftpController {
 
     private String mCurrentPath;
 
-    public SftpController(){
+    public SftpController() {
 
     }
 
-    public SftpController(String path){
+    public SftpController(String path) {
         mCurrentPath = path;
     }
 
 
-    public void resetPathToRoot(){
-        mCurrentPath = "";
+    public void resetPathToRoot() {
+        mCurrentPath = "/";
     }
 
-    public String getPath(){
+    public String getPath() {
         return mCurrentPath;
     }
 
-    public void setPath(String path){
+    public void setPath(String path) {
         mCurrentPath = path;
     }
 
-    public void appendToPath(String relPath){
-        if(mCurrentPath == null){
+    public void appendToPath(String relPath) {
+        if (mCurrentPath == null) {
             mCurrentPath = relPath;
-        }
-        else mCurrentPath += relPath;
+        } else mCurrentPath += relPath;
     }
 
-
+    public synchronized void disconnect(){
+        //nothing yet
+    }
     /**
      * Upload file(s) Task.
      */
@@ -73,7 +74,7 @@ public class SftpController {
         // Constructor
         //
 
-        public UploadTask(Session session, File[] localFiles,  SftpProgressMonitor spd) {
+        public UploadTask(Session session, File[] localFiles, SftpProgressMonitor spd) {
 
             mProgressDialog = spd;
             mLocalFiles = localFiles;
@@ -104,7 +105,7 @@ public class SftpController {
         /**
          *
          */
-        private boolean upload(Session session, File[] localFiles,  SftpProgressMonitor spd) {
+        private boolean upload(Session session, File[] localFiles, SftpProgressMonitor spd) {
 
             boolean success = true;
 
@@ -116,7 +117,7 @@ public class SftpController {
             } catch (IOException e) {
                 success = false;
                 e.printStackTrace();
-            } catch (SftpException se){
+            } catch (SftpException se) {
                 success = false;
             }
 
@@ -125,46 +126,52 @@ public class SftpController {
     }
 
     public void uploadFiles(Session session, File[] localFiles, SftpProgressMonitor spm) throws JSchException, IOException, SftpException {
-        if(session == null || !session.isConnected()){
+        if (session == null || !session.isConnected()) {
             session.connect();
         }
 
         Channel channel = session.openChannel("sftp");
         channel.setInputStream(null);
         channel.connect();
-        ChannelSftp channelSftp = (ChannelSftp)channel;
+        ChannelSftp channelSftp = (ChannelSftp) channel;
 
         for (File file : localFiles) {
-             channelSftp.put(file.getPath(), file.getName(),spm, ChannelSftp.APPEND);
+            channelSftp.put(file.getPath(), file.getName(), spm, ChannelSftp.APPEND);
         }
 
     }
 
-    public void lsRemoteFiles(Session session,TaskCallbackHandler taskCallbackHandler, String path){
-        mCurrentPath = path == null ? "": path+"/";
+    /**
+     * SHell ls command to list remote host's file list for the given directory.
+     * @param session the session
+     * @param taskCallbackHandler handle ls success or failure
+     * @param path   relative path from current directory.
+     */
+    public void lsRemoteFiles(Session session, TaskCallbackHandler taskCallbackHandler, String path) {
+        mCurrentPath = path == null || path == "" ? mCurrentPath : mCurrentPath  + path + "/";
         new LsTask(session, taskCallbackHandler).execute();
     }
 
 
-
     /**
-     *Shows all files (command ls) including directories.
+     * Shows all files (command ls) including directories.
      */
-    private class LsTask extends AsyncTask<Void,Void,Boolean> {
+    private class LsTask extends AsyncTask<Void, Void, Boolean> {
         RemoteFileListAdapter mfileListAdapter;
         Context mContext;
         Vector<ChannelSftp.LsEntry> mRemoteFiles;
         TaskCallbackHandler mTaskCallbackHandler;
 
         private Session mSession;
-        public LsTask(Session session, TaskCallbackHandler tch){
 
-            mSession                = session;
-            mTaskCallbackHandler    = tch;
+        public LsTask(Session session, TaskCallbackHandler tch) {
+
+            mSession = session;
+            mTaskCallbackHandler = tch;
         }
 
         @Override
-        protected void onPreExecute(){
+        protected void onPreExecute() {
 
         }
 
@@ -172,34 +179,32 @@ public class SftpController {
         protected Boolean doInBackground(Void... voids) {
             Boolean success = false;
 
-            Log.d(TAG, "current path is "+mCurrentPath);
+            Log.d(TAG, "current path is " + mCurrentPath);
 
             Channel channel = null;
-            try{
+            try {
                 mRemoteFiles = null;
-                if(true){//||mMainChannel == null || mMainChannel.isClosed()){
+                if (true) {
                     channel = mSession.openChannel("sftp");
                     channel.setInputStream(null);
                     channel.connect();
-                    ChannelSftp channelsftp = (ChannelSftp)channel;
-                    mRemoteFiles = channelsftp.ls("/"+mCurrentPath);
-                    if(mRemoteFiles ==null){
-                        Log.d(TAG,"remote file list is null");
-                    }
-                    else{
-                        for(ChannelSftp.LsEntry e : mRemoteFiles){
+                    ChannelSftp channelsftp = (ChannelSftp) channel;
+                    mRemoteFiles = channelsftp.ls(mCurrentPath);
+                    if (mRemoteFiles == null) {
+                        Log.d(TAG, "remote file list is null");
+                    } else {
+                        for (ChannelSftp.LsEntry e : mRemoteFiles) {
                             //Log.v(TAG," file "+ e.getFilename());
                         }
 
                     }
                 }
-            }
-            catch(Exception e){
-                Log.v(TAG, "sftprunnable exptn "+e.getCause());
+            } catch (Exception e) {
+                Log.v(TAG, "sftprunnable exptn " + e.getCause());
                 success = false;
                 return success;
             }
-            if(channel != null){
+            if (channel != null) {
                 channel.disconnect();
             }
 
@@ -209,13 +214,12 @@ public class SftpController {
 
         @Override
         protected void onPostExecute(Boolean success) {
-            if(success){
-                if(mTaskCallbackHandler != null){
+            if (success) {
+                if (mTaskCallbackHandler != null) {
                     mTaskCallbackHandler.onTaskFinished(mRemoteFiles);
                 }
-            }
-            else{
-                if(mTaskCallbackHandler != null){
+            } else {
+                if (mTaskCallbackHandler != null) {
                     mTaskCallbackHandler.onFail();
                 }
             }
@@ -227,6 +231,7 @@ public class SftpController {
      * Downloads the remote file at srcPath location on remote host, to the out
      * location on local device.
      * Uses SFTP get function.
+     *
      * @param session
      * @param srcPath
      * @param out
@@ -235,15 +240,15 @@ public class SftpController {
      * @throws SftpException
      */
     public void downloadFile(Session session, String srcPath, String out, SftpProgressMonitor spm) throws JSchException, SftpException {
-        if(session == null || !session.isConnected()){
+        if (session == null || !session.isConnected()) {
             session.connect();
         }
 
         Channel channel = session.openChannel("sftp");
-        ChannelSftp sftpChannel = (ChannelSftp)channel;
+        ChannelSftp sftpChannel = (ChannelSftp) channel;
         sftpChannel.connect();
 
-        sftpChannel.get(srcPath, out , spm, ChannelSftp.OVERWRITE);
+        sftpChannel.get(srcPath, out, spm, ChannelSftp.OVERWRITE);
 
         sftpChannel.disconnect();
 
@@ -253,13 +258,14 @@ public class SftpController {
     /**
      * Task for downloading remote file (sftp get).
      */
-    public class DownloadTask extends AsyncTask<Void,Void,Boolean> {
+    public class DownloadTask extends AsyncTask<Void, Void, Boolean> {
 
         Session mSession;
         String mSrcPath;
         String mOut;
         SftpProgressMonitor mSpm;
-        public DownloadTask(Session session, String srcPath, String out, SftpProgressMonitor spm){
+
+        public DownloadTask(Session session, String srcPath, String out, SftpProgressMonitor spm) {
             mSession = session;
             mSrcPath = srcPath;
             mOut = out;
@@ -267,34 +273,43 @@ public class SftpController {
         }
 
         @Override
-        protected void onPreExecute(){
+        protected void onPreExecute() {
 
         }
 
         @Override
         protected Boolean doInBackground(Void... voids) {
-            try{
+            Boolean result = false;
+            try {
+                Log.v(TAG, " path " + mSrcPath+", out path "+mOut);
+                downloadFile(mSession, mCurrentPath + mSrcPath, mOut, mSpm);
+                result = true;
 
-            downloadFile(mSession, "/"+mSrcPath, mOut,mSpm);
-                Log.v(TAG," path "+mSrcPath);
+            } catch (Exception e) {
+                Log.e(TAG, "EXCEPTION " + e.getMessage());
+
             }
-            catch(Exception e){
-               Log.e(TAG,"EXCEPTION "+e.getMessage());
+            finally {
+                return result;
             }
-            return null;
+
         }
 
         @Override
         protected void onPostExecute(Boolean success) {
-            if(success == null) return;
-            if(success){
-                //Need to close progress dialog.
+            if (success == null) return;
+            if (success) {
+                mSpm.end();
 
             }
         }
     }
 
-    public class GetTask extends AsyncTask<Void,Void,Boolean> {
+
+    /**
+     *
+     */
+    public class GetTask extends AsyncTask<Void, Void, Boolean> {
         RemoteFileListAdapter mfileListAdapter;
         Context mContext;
         Vector<ChannelSftp.LsEntry> mRemoteFiles;
@@ -302,15 +317,16 @@ public class SftpController {
         SftpProgressMonitor mSftpProgressMonitor;
 
         private Session mSession;
-        public GetTask(Session session, TaskCallbackHandler tch, SftpProgressMonitor sftpProgressMonitor){
 
-            mSession                = session;
-            mTaskCallbackHandler    = tch;
+        public GetTask(Session session, TaskCallbackHandler tch, SftpProgressMonitor sftpProgressMonitor) {
+
+            mSession = session;
+            mTaskCallbackHandler = tch;
             mSftpProgressMonitor = sftpProgressMonitor;
         }
 
         @Override
-        protected void onPreExecute(){
+        protected void onPreExecute() {
 
         }
 
@@ -318,25 +334,24 @@ public class SftpController {
         protected Boolean doInBackground(Void... voids) {
             Boolean success = false;
 
-            Log.v(TAG, "current path is ..................... "+mCurrentPath);
+            Log.v(TAG, "current path is " + mCurrentPath);
 
             Channel channel = null;
-            try{
+            try {
                 mRemoteFiles = null;
-                if(true){//||mMainChannel == null || mMainChannel.isClosed()){
+                if (true) {//||mMainChannel == null || mMainChannel.isClosed()){
                     channel = mSession.openChannel("sftp");
                     channel.setInputStream(null);
                     channel.connect();
-                    ChannelSftp channelsftp = (ChannelSftp)channel;
+                    ChannelSftp channelsftp = (ChannelSftp) channel;
                     channelsftp.get(mCurrentPath, mSftpProgressMonitor);
                 }
-            }
-            catch(Exception e){
-                Log.v(TAG, "sftprunnable exptn "+e.getCause());
+            } catch (Exception e) {
+                Log.v(TAG, "sftprunnable exptn " + e.getCause());
                 success = false;
                 return success;
             }
-            if(channel != null){
+            if (channel != null) {
                 channel.disconnect();
             }
 
@@ -346,13 +361,12 @@ public class SftpController {
 
         @Override
         protected void onPostExecute(Boolean success) {
-            if(success){
-                if(mTaskCallbackHandler != null){
+            if (success) {
+                if (mTaskCallbackHandler != null) {
                     mTaskCallbackHandler.onTaskFinished(mRemoteFiles);
                 }
-            }
-            else{
-                if(mTaskCallbackHandler != null){
+            } else {
+                if (mTaskCallbackHandler != null) {
                     mTaskCallbackHandler.onFail();
                 }
             }

@@ -13,34 +13,53 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 /**
- * Created by jon on 5/17/14.
+ * Created by Jon Hough on 5/17/14.
  */
 public class ShellController {
 
-
+    public static final String TAG = "ShellController";
     private final SessionController mSessionController;
     private BufferedReader mBufferedReader;
     private DataOutputStream mDataOutputStream;
     private Channel mChannel;
 
-    private String mCommand;
-    public ShellController(SessionController sessionController){
+
+    public ShellController(SessionController sessionController) {
         mSessionController = sessionController;
     }
 
 
-    public DataOutputStream getDataOutputStream(){
+    /**
+     * Gets the dataoutputstream
+     * @return
+     */
+    public DataOutputStream getDataOutputStream() {
         return mDataOutputStream;
     }
 
-    public void setCommand(String command){
-        mCommand = command;
+
+
+
+    public synchronized void disconnect() throws IOException {
+
+        //close streams
+        mDataOutputStream.flush();
+        mDataOutputStream.close();
+        mBufferedReader.close();
+        //disconnect channel
+        if (mChannel != null)
+            mChannel.disconnect();
     }
 
-    public void writeToOutput(String command){
-        if(mDataOutputStream != null){
+    /**
+     * Writes to the outputstream, to remote server.
+     *
+     * @param command
+     */
+    public void writeToOutput(String command) {
+        if (mDataOutputStream != null) {
             try {
-                mDataOutputStream.writeBytes(command+"\r\n");
+                mDataOutputStream.writeBytes(command + "\r\n");
                 mDataOutputStream.flush();
             } catch (IOException e) {
                 // TODO Auto-generated catch block
@@ -51,6 +70,13 @@ public class ShellController {
 
     }
 
+    /**
+     * Open shell connection to remote server.
+     * @param handler
+     * @param editText
+     * @throws JSchException
+     * @throws IOException
+     */
     public void openShell(Handler handler, EditText editText) throws JSchException, IOException {
         final Handler myHandler = handler;
         final EditText myEditText = editText;
@@ -61,27 +87,26 @@ public class ShellController {
         new Thread(new Runnable() {
             @Override
             public void run() {
+                synchronized (ShellController.this) {
+                    try {
+                        String line;
+                        while (true) {
+                            while ((line = mBufferedReader.readLine()) != null) {
+                                final String result = line;
+                                myHandler.post(new Runnable() {
+                                    public void run() {
+                                        myEditText.setText(myEditText.getText().toString() + "\r\n" + result + "\r\n");
+                                    }
+                                });
+                            }
 
-                try {
-                    String line;
-                    while(true){
-                        while ((line = mBufferedReader.readLine()) != null) {
-                            final String result = line;
-                            myHandler.post(new Runnable() {
-                                public void run() {
-                                    myEditText.setText(myEditText.getText().toString() + "\r\n" + result+"\r\n");
-                                }
-                            });
+
                         }
 
-
-
+                    } catch (Exception e) {
+                        Log.e(TAG, " Exception " + e.getMessage() + "." + e.getCause() + "," + e.getClass().toString());
                     }
-
-                } catch (Exception e) {
-                    Log.v("EXECPTION", " EX " + e.getMessage()+"."+e.getCause()+","+e.getClass().toString());
                 }
-
             }
         }).start();
     }
