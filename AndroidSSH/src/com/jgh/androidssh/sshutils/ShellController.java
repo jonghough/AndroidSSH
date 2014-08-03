@@ -31,13 +31,12 @@ public class ShellController {
 
     /**
      * Gets the dataoutputstream
+     *
      * @return
      */
     public DataOutputStream getDataOutputStream() {
         return mDataOutputStream;
     }
-
-
 
 
     public synchronized void disconnect() throws IOException {
@@ -72,6 +71,7 @@ public class ShellController {
 
     /**
      * Open shell connection to remote server.
+     *
      * @param handler
      * @param editText
      * @throws JSchException
@@ -87,25 +87,20 @@ public class ShellController {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                synchronized (ShellController.this) {
-                    try {
-                        String line;
-                        while (true) {
-                            while ((line = mBufferedReader.readLine()) != null) {
-                                final String result = line;
-                                myHandler.post(new Runnable() {
-                                    public void run() {
-                                        myEditText.setText(myEditText.getText().toString() + "\r\n" + result + "\r\n");
-                                    }
-                                });
-                            }
-
-
+                try {
+                    String line;
+                    while (true) {
+                        while ((line = mBufferedReader.readLine()) != null) {
+                            final String result = line;
+                            myHandler.post(new Runnable() {
+                                public void run() {
+                                    myEditText.setText(myEditText.getText().toString() + "\r\n" + result + "\r\n");
+                                }
+                            });
                         }
-
-                    } catch (Exception e) {
-                        Log.e(TAG, " Exception " + e.getMessage() + "." + e.getCause() + "," + e.getClass().toString());
                     }
+                } catch (Exception e) {
+                    Log.e(TAG, " Exception " + e.getMessage() + "." + e.getCause() + "," + e.getClass().toString());
                 }
             }
         }).start();
