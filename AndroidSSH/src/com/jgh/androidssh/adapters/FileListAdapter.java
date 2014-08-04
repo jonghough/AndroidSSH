@@ -14,7 +14,8 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 /**
- * Adapter for ListView
+ * Adapter for ListView. Holds current local directory
+ * file list. Differentiates between directories and non-directories.
  *
  * @author Jonathan Hough
  */
@@ -68,12 +69,11 @@ public class FileListAdapter extends BaseAdapter {
             holder.color = 0xff009999;
         }
         else{
-            holder.color = 0xff558899;
+            holder.color = 0xffff8888;;
         }
 
         holder.textView.setTextColor(holder.color);
 
-        //setName(position, holder.textView);
         return convertView;
     }
 

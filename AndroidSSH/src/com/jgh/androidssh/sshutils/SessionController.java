@@ -34,28 +34,30 @@ public class SessionController {
     private static final String TAG = "SessionController";
 
     /**
-     *
+     * JSch Session
      */
     private Session mSession;
     /**
-     *
+     * JSch UserInfo
      */
     private SessionUserInfo mSessionUserInfo;
     /**
-     *
-     */
-    private ChannelExec mChannelExec;
-    /**
-     *
+     * Thread for background tasks
      */
     private Thread mThread;
     /**
-     *
+     * Controls SFTP interface
      */
     private SftpController mSftpController;
 
+    /**
+     * Controls Shell interface
+     */
     private ShellController mShellController;
 
+    /**
+     *
+     */
     private ConnectionStatusListener mConnectStatusListener;
     /**
      * Instance
@@ -110,70 +112,6 @@ public class SessionController {
         mConnectStatusListener = csl;
     }
 
-    private class SftpTask extends AsyncTask<Void, Void, Boolean> {
-        RemoteFileListAdapter mfileListAdapter;
-        Context mContext;
-        Vector<ChannelSftp.LsEntry> mRemoteFiles;
-        String mPath;
-
-        public SftpTask(Context context, RemoteFileListAdapter fileListAdapter, String path) {
-
-            mfileListAdapter = fileListAdapter;
-            mContext = context;
-            mPath = path == null ? "" : path + "/";
-        }
-
-        @Override
-        protected void onPreExecute() {
-            if (!mSession.isConnected()) {
-                Log.v(TAG, "SESSION IS NOT CONNECTED");
-                connect();
-            }
-        }
-
-        @Override
-        protected Boolean doInBackground(Void... voids) {
-            Boolean success = false;
-
-
-            try {
-                mRemoteFiles = null;
-                if (true) {//||mMainChannel == null || mMainChannel.isClosed()){
-                    Channel channel = mSession.openChannel("sftp");
-                    channel.setInputStream(null);
-                    channel.connect();
-                    ChannelSftp channelsftp = (ChannelSftp) channel;
-                    mRemoteFiles = channelsftp.ls("/" + mPath);
-                    if (mRemoteFiles == null) {
-                        //do nothing
-                    } else {
-                        for (ChannelSftp.LsEntry e : mRemoteFiles) {
-
-                            // Log.v(TAG, " file " + e.getFilename());
-                        }
-
-                    }
-                }
-            } catch (Exception e) {
-                Log.e(TAG, "sftprunnable exptn " + e.getCause());
-                success = false;
-                return success;
-            }
-
-
-            return true;
-        }
-
-
-        @Override
-        protected void onPostExecute(Boolean success) {
-            if (success) {
-                mfileListAdapter = new RemoteFileListAdapter(mContext, mRemoteFiles);
-                ((FileListActivity) mContext).setupRemoteFiles(mfileListAdapter);
-            }
-        }
-    }
-
 
     /**
      * Uploads files to remote server.
@@ -210,6 +148,7 @@ public class SessionController {
     }
 
     /**
+     * Lists the files in the current directory on remote server.
      * @param taskCallbackHandler
      * @param path
      * @throws JSchException
@@ -260,7 +199,8 @@ public class SessionController {
 
 
     /**
-     * Execute command on remote server
+     * Execute command on remote server. If SSH is not open, SSH shell will be opened and
+     * command executed.
      *
      * @param command
      * @return
@@ -290,7 +230,7 @@ public class SessionController {
 
 
     /**
-     *
+     * Runnable for beginning session.
      */
     public class SshRunnable implements Runnable {
 
@@ -314,12 +254,14 @@ public class SessionController {
                 Log.e(TAG, "Exception:" + ex.getMessage());
             }
 
-            Log.v("SessionController", "Session !" + mSession.isConnected());
+            Log.d("SessionController", "Session !" + mSession.isConnected());
 
             new Thread(new Runnable() {
                 @Override
                 public void run() {
                     while (true) {
+
+                        //keep track of connection status
                         try {
                             Thread.sleep(2000);
                             if (mConnectStatusListener != null) {
@@ -337,60 +279,7 @@ public class SessionController {
     }
 
 
-    public class ExecSshTask extends AsyncTask<Void, Void, Boolean> {
 
-        private SshExecutor mSshExecutor;
-
-        private ExecTaskCallbackHandler mTaskCallbackHandler;
-
-        //
-        // Constructor
-        //
-
-        public ExecSshTask(Context context, SshExecutor exec, ExecTaskCallbackHandler taskCallbackHandler) {
-            mSshExecutor = exec;
-            mTaskCallbackHandler = taskCallbackHandler;
-
-        }
-
-        @Override
-        protected void onPreExecute() {
-
-
-        }
-
-        @Override
-        protected Boolean doInBackground(Void... arg0) {
-            boolean success = false;
-            try {
-                mSshExecutor.executeCommand(getSession());
-            } catch (JSchException e) {
-                if (mTaskCallbackHandler != null)
-                    mTaskCallbackHandler.onFail();
-                // makeToast(R.string.taskfail);
-            } catch (IOException e) {
-                if (mTaskCallbackHandler != null)
-                    mTaskCallbackHandler.onFail();
-            }
-            success = true;
-            return success;
-        }
-
-        @Override
-        protected void onPostExecute(Boolean b) {
-
-            if (b) {
-                if (mTaskCallbackHandler != null)
-                    mTaskCallbackHandler.onComplete(mSshExecutor.getString() + "\n");
-
-            } else {
-                if (mTaskCallbackHandler != null)
-                    mTaskCallbackHandler.onFail();
-            }
-
-        }
-
-    }
 
 
 

@@ -39,6 +39,10 @@ public class ShellController {
     }
 
 
+    /**
+     * Disconnects shell and closes streams.
+     * @throws IOException
+     */
     public synchronized void disconnect() throws IOException {
 
         //close streams

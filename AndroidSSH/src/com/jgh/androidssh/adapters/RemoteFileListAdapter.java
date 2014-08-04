@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import java.util.Vector;
 
 /**
+ * Adapter for holding data of remote files
+ * in remote host's current directory.
  * Created by jon on 4/12/14.
  */
 public class RemoteFileListAdapter extends BaseAdapter {
@@ -71,8 +73,6 @@ public class RemoteFileListAdapter extends BaseAdapter {
         }
 
         holder.textView.setTextColor(holder.color);
-
-        //setName(position, holder.textView);
         return convertView;
     }
 
