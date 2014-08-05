@@ -41,6 +41,7 @@ public class ShellController {
 
     /**
      * Disconnects shell and closes streams.
+     *
      * @throws IOException
      */
     public synchronized void disconnect() throws IOException {
@@ -98,7 +99,9 @@ public class ShellController {
                             final String result = line;
                             myHandler.post(new Runnable() {
                                 public void run() {
-                                    myEditText.setText(myEditText.getText().toString() + "\r\n" + result + "\r\n");
+                                    synchronized (myEditText) {
+                                        myEditText.setText(myEditText.getText().toString() + "\r\n" + result + "\r\n");
+                                    }
                                 }
                             });
                         }

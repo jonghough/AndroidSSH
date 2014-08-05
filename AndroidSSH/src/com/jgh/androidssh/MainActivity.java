@@ -9,6 +9,7 @@ import com.jgh.androidssh.sshutils.ExecTaskCallbackHandler;
 import com.jgh.androidssh.sshutils.SessionUserInfo;
 import com.jgh.androidssh.sshutils.SshExecutor;
 import com.jgh.androidssh.sshutils.SessionController;
+
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -41,12 +42,13 @@ public class MainActivity extends Activity implements OnClickListener {
     private EditText mHostEdit;
     private EditText mPasswordEdit;
     private SshEditText mCommandEdit;
-    private Button mButton, mEndSessionBtn, mSftpButton,mRunButton;
+    private Button mButton, mEndSessionBtn, mSftpButton, mRunButton;
     private SessionUserInfo mSUI;
     private SessionController mSessionController;
 
     private Handler mHandler;
     private Handler mTvHandler;
+
     @Override
     public void onCreate(Bundle bundle) {
         super.onCreate(bundle);
@@ -94,16 +96,45 @@ public class MainActivity extends Activity implements OnClickListener {
             }
         });
 
-        mCommandEdit.setOnKeyListener( new View.OnKeyListener() {
-            public boolean onKey( View v, int keyCode, KeyEvent event) {
+        mCommandEdit.setOnKeyListener(new View.OnKeyListener() {
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
 
-                if (keyCode == KeyEvent.KEYCODE_DEL)
-                {
-                    if(mCommandEdit.getCurrentCursorLine() < mCommandEdit.getLineCount()-1 ||mCommandEdit.isNewLine()){
+                if (keyCode == KeyEvent.KEYCODE_DEL) {
+                    if (mCommandEdit.getCurrentCursorLine() < mCommandEdit.getLineCount() - 1 || mCommandEdit.isNewLine()) {
                         mCommandEdit.setSelection(mCommandEdit.getText().length());
                         return true;
                     }
                     return false;
+                } else if (keyCode == KeyEvent.KEYCODE_ENTER) {
+                    if (isEditTextEmpty(mCommandEdit)) {
+                        return true;
+                    }
+
+                    if (mSUI == null) {
+                        makeToast(R.string.insertallvalues);
+                        return true;
+                    }
+
+                    // run command
+                    else {
+                        // get the last line of terminal
+                        String command = getLastLine();
+                        ExecTaskCallbackHandler t = new ExecTaskCallbackHandler() {
+                            @Override
+                            public void onFail() {
+                                makeToast(R.string.taskfail);
+                            }
+
+                            @Override
+                            public void onComplete(String completeString) {
+                                mTextView.setText(mTextView.getText() + "\n" + completeString
+                                        + mUserEdit.getText().toString().trim() + "\n");
+                            }
+                        };
+                        mCommandEdit.AddLastInput(command);
+                        mSessionController.executeCommand(mHandler, mCommandEdit, t, command);
+
+                    }
                 }
 
                 return false;
@@ -113,7 +144,7 @@ public class MainActivity extends Activity implements OnClickListener {
 
     /**
      * AsyncTask to run the command.
-     * 
+     *
      * @author Jonathan Hough
      * @since Dec 4 2012
      */
@@ -165,8 +196,7 @@ public class MainActivity extends Activity implements OnClickListener {
                 mTextView.setText(mTextView.getText() + "\n" + mEx.getString() + "\n"
                         + mUserEdit.getText().toString().trim() + "\n");
 
-            }
-            else {
+            } else {
                 makeToast(R.string.taskfail);
             }
 
@@ -175,7 +205,7 @@ public class MainActivity extends Activity implements OnClickListener {
 
     /**
      * Displays toast to user.
-     * 
+     *
      * @param text
      */
     private void makeToast(int text) {
@@ -214,7 +244,7 @@ public class MainActivity extends Activity implements OnClickListener {
 
     /**
      * Checks if the EditText is empty.
-     * 
+     *
      * @param editText
      * @return true if empty
      */
@@ -242,12 +272,12 @@ public class MainActivity extends Activity implements OnClickListener {
                 @Override
                 public void onDisconnected() {
 
-                   mTvHandler.post(new Runnable() {
-                       @Override
-                       public void run() {
-                           mConnectStatus.setText("Connection Status: NOT CONNECTED");
-                       }
-                   });
+                    mTvHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            mConnectStatus.setText("Connection Status: NOT CONNECTED");
+                        }
+                    });
                 }
 
                 @Override
@@ -261,9 +291,7 @@ public class MainActivity extends Activity implements OnClickListener {
                 }
             });
 
-        }
-
-        else if (v == mRunButton) {
+        } else if (v == mRunButton) {
             // check valid data
             if (isEditTextEmpty(mCommandEdit)) {
                 return;
@@ -293,7 +321,7 @@ public class MainActivity extends Activity implements OnClickListener {
                     }
                 };
                 mCommandEdit.AddLastInput(command);
-                mSessionController.executeCommand(mHandler, mCommandEdit,t, command);
+                mSessionController.executeCommand(mHandler, mCommandEdit, t, command);
                 /*if (mSUI != null) {
                     if(mComEx == null)
                         mComEx = new CommandExec();
@@ -308,25 +336,21 @@ public class MainActivity extends Activity implements OnClickListener {
 
             }
 
-        }
-
-        else if (v == mSftpButton) {
+        } else if (v == mSftpButton) {
             if (mSUI != null) {
 
-               startSftpActivity();
+                startSftpActivity();
 
             }
-        }
-        else if (v == this.mEndSessionBtn){
-            try{
-              mSessionController.disconnect();
-            }catch(IOException e){
+        } else if (v == this.mEndSessionBtn) {
+            try {
+                mSessionController.disconnect();
+            } catch (IOException e) {
                 Log.e(TAG, "Disconnect exception " + e.getMessage());
             }
         }
 
     }
-
 
 
 }
