@@ -25,7 +25,6 @@
         </activity>
         <activity android:name=".FileListActivity" />
 
-        <service android:name=".services.SftpService" />
     </application>
 
 </manifest>
