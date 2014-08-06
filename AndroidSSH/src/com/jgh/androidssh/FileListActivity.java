@@ -193,7 +193,8 @@ public class FileListActivity extends Activity implements OnItemClickListener, O
             mSessionController.listRemoteFiles(new TaskCallbackHandler() {
                 @Override
                 public void onFail() {
-                    //nothing
+                    Log.e(TAG, "Fail listing remote files");
+
                 }
 
                 @Override
@@ -204,7 +205,9 @@ public class FileListActivity extends Activity implements OnItemClickListener, O
                 }
             }, "");
         } catch (JSchException j) {
+            Log.e(TAG, "ShowRemoteFiles exception "+ j.getMessage());
         } catch (SftpException s) {
+            Log.e(TAG, "ShowRemoteFiles exception "+ s.getMessage());
         }
     }
 
@@ -266,6 +269,10 @@ public class FileListActivity extends Activity implements OnItemClickListener, O
     }
 
 
+    /**
+     * Listener class for remote file list click events. Handles file and directory clicks
+     * from user.
+     */
     private class RemoteClickListener implements OnItemClickListener {
 
 

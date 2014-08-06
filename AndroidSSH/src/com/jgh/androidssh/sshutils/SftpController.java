@@ -27,7 +27,7 @@ public class SftpController {
 
     public static final String TAG = "SftpController";
 
-    private String mCurrentPath;
+    private String mCurrentPath="/";
 
     public SftpController() {
 
@@ -189,7 +189,8 @@ public class SftpController {
                     channel.setInputStream(null);
                     channel.connect();
                     ChannelSftp channelsftp = (ChannelSftp) channel;
-                    mRemoteFiles = channelsftp.ls(mCurrentPath);
+                    String path = mCurrentPath == null ? "/" : mCurrentPath;
+                    mRemoteFiles = channelsftp.ls(path);
                     if (mRemoteFiles == null) {
                         Log.d(TAG, "remote file list is null");
                     } else {
