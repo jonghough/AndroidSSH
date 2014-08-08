@@ -211,12 +211,13 @@ public class SessionController {
         } else {
 
             if (mShellController == null) {
-                mShellController = new ShellController(this);
+                mShellController = new ShellController();
 
                 try {
-                    mShellController.openShell(handler, editText);
+                    mShellController.openShell(getSession(), handler, editText);
                 } catch (Exception e) {
-                    //TODO
+                    Log.e(TAG, "Shell open exception "+e.getMessage());
+                    //TODO fix general exception catching
                 }
             }
 
@@ -249,7 +250,9 @@ public class SessionController {
                 mSession.connect();
 
             } catch (JSchException jex) {
-                Log.e(TAG, "JschException: " + jex.getMessage() + ", Fail to get session " + mSessionUserInfo.getUser() + ", " + mSessionUserInfo.getHost());
+                Log.e(TAG, "JschException: " + jex.getMessage() +
+                        ", Fail to get session " + mSessionUserInfo.getUser() +
+                        ", " + mSessionUserInfo.getHost());
             } catch (Exception ex) {
                 Log.e(TAG, "Exception:" + ex.getMessage());
             }

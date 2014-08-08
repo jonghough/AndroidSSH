@@ -6,6 +6,7 @@ import android.widget.EditText;
 
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.Session;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -13,19 +14,22 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 /**
+ * Controller for SSH shell-like process between local device and remote SSH server.
+ * Sustains an open channel to remote server and streams data between local device
+ * and remote.
+ *
  * Created by Jon Hough on 5/17/14.
  */
 public class ShellController {
 
     public static final String TAG = "ShellController";
-    private final SessionController mSessionController;
     private BufferedReader mBufferedReader;
     private DataOutputStream mDataOutputStream;
     private Channel mChannel;
 
 
-    public ShellController(SessionController sessionController) {
-        mSessionController = sessionController;
+    public ShellController() {
+        //nothing
     }
 
 
@@ -56,9 +60,10 @@ public class ShellController {
     }
 
     /**
-     * Writes to the outputstream, to remote server.
+     * Writes to the outputstream, to remote server. Input should ideally come from an EditText, to which
+     * the shell response output will also be written, to simulate a shell terminal.
      *
-     * @param command
+     * @param command commands string.
      */
     public void writeToOutput(String command) {
         if (mDataOutputStream != null) {
@@ -69,23 +74,25 @@ public class ShellController {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
-
         }
-
     }
 
     /**
-     * Open shell connection to remote server.
+     * Opens shell connection to remote server. Listens for user input in EditText Data Input Stream and
+     * streams to remote server. Server responses are streamed back on background thread and
+     * output to the EditText.
      *
-     * @param handler
-     * @param editText
+     * @param handler Handler for updating UI EditText on non-UI thread.
+     * @param editText EditText to act as input and output point.
      * @throws JSchException
      * @throws IOException
      */
-    public void openShell(Handler handler, EditText editText) throws JSchException, IOException {
+    public void openShell(Session session, Handler handler, EditText editText) throws JSchException, IOException {
+        if(session == null) throw new NullPointerException("Session cannot be null!");
+        if(!session.isConnected()) throw new IllegalStateException("Session must be connected.");
         final Handler myHandler = handler;
         final EditText myEditText = editText;
-        mChannel = mSessionController.getSession().openChannel("shell");
+        mChannel = session.openChannel("shell");
         mChannel.connect();
         mBufferedReader = new BufferedReader(new InputStreamReader(mChannel.getInputStream()));
         mDataOutputStream = new DataOutputStream(mChannel.getOutputStream());
