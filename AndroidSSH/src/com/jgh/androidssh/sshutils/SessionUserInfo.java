@@ -4,16 +4,27 @@ import com.jcraft.jsch.UserInfo;
 
 /**
  * A class to hold information used to make JSch session connections.
+ * Implements JSch library's UserInfo interface. Used for opening Session
+ * connection using username, password and host address information.
  * @author Jonathan Hough
  * @since Dec 4 2012
  *
  */
 public class SessionUserInfo implements UserInfo {
 
+    /**
+     * User password.
+     */
     private final String mPassword;
-    
+
+    /**
+     * User name
+     */
     private final String mUser;
-    
+
+    /**
+     * Host address
+     */
     private final String mHost;
     
     //

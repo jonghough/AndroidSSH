@@ -322,17 +322,7 @@ public class MainActivity extends Activity implements OnClickListener {
                 };
                 mCommandEdit.AddLastInput(command);
                 mSessionController.executeCommand(mHandler, mCommandEdit, t, command);
-                /*if (mSUI != null) {
-                    if(mComEx == null)
-                        mComEx = new CommandExec();
-                       
-                    mComEx.setCommand(command);
-                        
-                    new SshTask(this, mComEx).execute();
-                } else {
-                    makeToast(R.string.insertallvalues);
-                    return;
-                }*/
+
 
             }
 
