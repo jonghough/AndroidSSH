@@ -191,7 +191,7 @@ public class FileListActivity extends Activity implements OnItemClickListener, O
     private void showRemoteFiles() {
         final ProgressDialog progressDialog = new ProgressDialog(FileListActivity.this, 0);
         progressDialog.setIndeterminate(true);
-        progressDialog.setTitle("Retrieving remote file list");
+        progressDialog.setTitle(R.string.retrieve_remote_files);
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         try {
             mSessionController.listRemoteFiles(new TaskCallbackHandler() {
@@ -302,7 +302,7 @@ public class FileListActivity extends Activity implements OnItemClickListener, O
 
                 final ProgressDialog progressDialog = new ProgressDialog(FileListActivity.this, 0);
                 progressDialog.setIndeterminate(true);
-                progressDialog.setTitle("Retrieving remote file list");
+                progressDialog.setTitle(R.string.retrieve_remote_files);
                 progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 
                 try {

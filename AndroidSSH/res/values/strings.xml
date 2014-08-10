@@ -18,6 +18,7 @@
 	<string name="progress_pleasewait">Please wait</string>
 	<string name="filetransfer">File transfer</string>
 	<string name="up">Up</string>
+    <string name="retrieve_remote_files">Retrieving remote file list</string>
 	
 	
 	<string name="insertallvalues">Please fill in username, hostname and password values.</string>
