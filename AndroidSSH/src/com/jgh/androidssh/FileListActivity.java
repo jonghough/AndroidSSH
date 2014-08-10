@@ -137,7 +137,7 @@ public class FileListActivity extends Activity implements OnItemClickListener, O
         // change the list
         if (mFilenames.get(position).isDirectory()) {
             mRootFile = mFilenames.get(position);
-            Log.v(TAG, "ROOT FILE POSIITON IS "+mRootFile);
+            Log.v(TAG, "ROOT FILE POSIITON IS " + mRootFile);
             mFilenames.clear();
             if (mRootFile.listFiles() == null) {
                 return;
@@ -192,6 +192,11 @@ public class FileListActivity extends Activity implements OnItemClickListener, O
         try {
             mSessionController.listRemoteFiles(new TaskCallbackHandler() {
                 @Override
+                public void OnBegin() {
+
+                }
+
+                @Override
                 public void onFail() {
                     Log.e(TAG, "Fail listing remote files");
 
@@ -205,9 +210,9 @@ public class FileListActivity extends Activity implements OnItemClickListener, O
                 }
             }, "");
         } catch (JSchException j) {
-            Log.e(TAG, "ShowRemoteFiles exception "+ j.getMessage());
+            Log.e(TAG, "ShowRemoteFiles exception " + j.getMessage());
         } catch (SftpException s) {
-            Log.e(TAG, "ShowRemoteFiles exception "+ s.getMessage());
+            Log.e(TAG, "ShowRemoteFiles exception " + s.getMessage());
         }
     }
 
@@ -288,13 +293,25 @@ public class FileListActivity extends Activity implements OnItemClickListener, O
             if (mRemoteFileListAdapter.getRemoteFiles().get(position).getAttrs().isDir()
                     || mRemoteFileListAdapter.getRemoteFiles().get(position).getFilename().trim() == "..") {
 
+                final ProgressDialog progressDialog = new ProgressDialog(FileListActivity.this, 0);
+                progressDialog.setIndeterminate(true);
+                progressDialog.setTitle("Retrieving remote file list");
+                progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 
                 try {
                     mIsProcessing = true;
                     mSessionController.listRemoteFiles(new TaskCallbackHandler() {
+
+
+                        @Override
+                        public void OnBegin() {
+                            progressDialog.show();
+                        }
+
                         @Override
                         public void onFail() {
                             mIsProcessing = false;
+                            progressDialog.dismiss();
                         }
 
                         @Override
@@ -303,17 +320,19 @@ public class FileListActivity extends Activity implements OnItemClickListener, O
                             mRemoteListView.setAdapter(mRemoteFileListAdapter);
                             mRemoteFileListAdapter.notifyDataSetChanged();
                             mIsProcessing = false;
+                            progressDialog.dismiss();
 
                         }
                     }, mRemoteFileListAdapter.getRemoteFiles().get(position).getFilename());
                 } catch (JSchException j) {
                     Log.e(TAG, "Error on remote file click " + j.getMessage());
+                    progressDialog.dismiss();
                 } catch (SftpException s) {
                     Log.e(TAG, "Error on remote file click " + s.getMessage());
+                    progressDialog.dismiss();
                 }
 
-            }
-            else {
+            } else {
 
                 // sftp the file
                 SftpProgressDialog progressDialog = new SftpProgressDialog(FileListActivity.this, 0);

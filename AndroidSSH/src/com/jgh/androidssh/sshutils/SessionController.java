@@ -56,7 +56,7 @@ public class SessionController {
     private ShellController mShellController;
 
     /**
-     *
+     * Listener object for connection status changed.
      */
     private ConnectionStatusListener mConnectStatusListener;
     /**
@@ -183,10 +183,9 @@ public class SessionController {
             if(mShellController != null){
                 mShellController.disconnect();
             }
-            mSession.disconnect();
-
             if (mConnectStatusListener != null)
                 mConnectStatusListener.onDisconnected();
+            mSession.disconnect();
         }
         if (mThread != null && mThread.isAlive()) {
             try {
@@ -231,7 +230,8 @@ public class SessionController {
 
 
     /**
-     * Runnable for beginning session.
+     * Runnable for beginning session. Opens JSch session with username, password and host information from
+     * <b>mSessionUserInfo</b>.
      */
     public class SshRunnable implements Runnable {
 
@@ -280,10 +280,4 @@ public class SessionController {
             }).start();
         }
     }
-
-
-
-
-
-
 }

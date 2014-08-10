@@ -15,46 +15,90 @@ import java.io.IOException;
 import java.util.Vector;
 
 /**
+ * Controller class for SFTP functions. Performs SFTP
+ * ls, get, put commands between local device and remote SSH
+ * server. For each process a new sftpchannel is opened and closed
+ * after completion.
  * Created by Jon Hough on 4/19/14.
  */
 public class SftpController {
 
+    /**
+     * Tag name
+     */
     public static final String TAG = "SftpController";
 
-    private String mCurrentPath="/";
+    /**
+     * Remote directory path. The path to the current remote directory.
+     */
+    private String mCurrentPath = "/";
 
+
+    /**
+     * Creates instance of SftpController. Performs SFTP functions.
+     */
     public SftpController() {
 
     }
 
+    /**
+     * Creates instance of SftpController. Performs SFTP functions.
+     *
+     * @param path path to chosen directory on remote host.
+     */
     public SftpController(String path) {
         mCurrentPath = path;
     }
 
 
+    /**
+     * Resets the current path on remote server.
+     */
     public void resetPathToRoot() {
         mCurrentPath = "/";
     }
 
+
+    /**
+     * Returns the path to the current directory on the
+     * remote server.
+     *
+     * @return
+     */
     public String getPath() {
         return mCurrentPath;
     }
 
+
+    /**
+     * Sets the path to current directory on the remote
+     * server.
+     *
+     * @param path
+     */
     public void setPath(String path) {
         mCurrentPath = path;
     }
 
+
+    /**
+     * Appends <b>relPath</b> to the current path on remote host.
+     *
+     * @param relPath relative path
+     */
     public void appendToPath(String relPath) {
         if (mCurrentPath == null) {
             mCurrentPath = relPath;
-        }
-        else mCurrentPath += relPath;
+        } else mCurrentPath += relPath;
     }
 
-    public synchronized void disconnect(){
+
+    /**
+     * Disconnects SFTP.
+     */
+    public synchronized void disconnect() {
         //nothing yet
     }
-
 
 
     /**
@@ -102,17 +146,17 @@ public class SftpController {
                 uploadFiles(mSession, mLocalFiles, mProgressDialog);
             } catch (JSchException e) {
                 e.printStackTrace();
-                Log.e(TAG, "JSchException "+e.getMessage());
+                Log.e(TAG, "JSchException " + e.getMessage());
                 success = false;
             } catch (IOException e) {
                 e.printStackTrace();
-                Log.e(TAG, "IOException "+e.getMessage());
+                Log.e(TAG, "IOException " + e.getMessage());
                 success = false;
             } catch (SftpException e) {
                 e.printStackTrace();
-                Log.e(TAG, "SftpException "+e.getMessage());
+                Log.e(TAG, "SftpException " + e.getMessage());
                 success = false;
-            }finally{
+            } finally {
                 return success;
             }
         }
@@ -126,11 +170,11 @@ public class SftpController {
         /**
          * Uploads the files in <b>localFiles</b> to the current directory on
          * remote server.
-         * @param session the Jsch SSH session instance
-         * @param localFiles array of files to be uploaded
-         * @param spd progress monitor
-         * @return True if success, false otherwise.
          *
+         * @param session    the Jsch SSH session instance
+         * @param localFiles array of files to be uploaded
+         * @param spd        progress monitor
+         * @return True if success, false otherwise.
          * @throws JSchException
          * @throws SftpException
          * @throws IOException
@@ -148,9 +192,10 @@ public class SftpController {
     /**
      * Uploads the files in <b>localFiles</b> to the current directory on
      * remote server.
-     * @param session the Jsch SSH session instance
+     *
+     * @param session    the Jsch SSH session instance
      * @param localFiles array of files to be uploaded
-     * @param spm progress monitor
+     * @param spm        progress monitor
      * @throws JSchException
      * @throws IOException
      * @throws SftpException
@@ -174,12 +219,13 @@ public class SftpController {
 
     /**
      * SHell ls command to list remote host's file list for the given directory.
-     * @param session the session
+     *
+     * @param session             the session
      * @param taskCallbackHandler handle ls success or failure
-     * @param path   relative path from current directory.
+     * @param path                relative path from current directory.
      */
     public void lsRemoteFiles(Session session, TaskCallbackHandler taskCallbackHandler, String path) {
-        mCurrentPath = path == null || path == "" ? mCurrentPath : mCurrentPath  + path + "/";
+        mCurrentPath = path == null || path == "" ? mCurrentPath : mCurrentPath + path + "/";
         new LsTask(session, taskCallbackHandler).execute();
     }
 
@@ -208,8 +254,9 @@ public class SftpController {
 
         /**
          * Async Task for listing contents of remote directory.
+         *
          * @param session currently connected Jsch session.
-         * @param tch callback handler for completion or failure.
+         * @param tch     callback handler for completion or failure.
          */
         public LsTask(Session session, TaskCallbackHandler tch) {
 
@@ -219,7 +266,8 @@ public class SftpController {
 
         @Override
         protected void onPreExecute() {
-
+            if(mTaskCallbackHandler != null)
+                mTaskCallbackHandler.OnBegin();
         }
 
         @Override
@@ -310,10 +358,11 @@ public class SftpController {
 
         /**
          * Async Task for downloading remote file to local device (SFTP get command).
+         *
          * @param session Current connected JSch Session
          * @param srcPath Path to target file on remote server
-         * @param out Path to output location on local device.
-         * @param spm Progress monitor, to monitor download progress.
+         * @param out     Path to output location on local device.
+         * @param spm     Progress monitor, to monitor download progress.
          */
         public DownloadTask(Session session, String srcPath, String out, SftpProgressMonitor spm) {
             mSession = session;
@@ -331,15 +380,14 @@ public class SftpController {
         protected Boolean doInBackground(Void... voids) {
             Boolean result = false;
             try {
-                Log.v(TAG, " path " + mSrcPath+", out path "+mOut);
+                Log.v(TAG, " path " + mSrcPath + ", out path " + mOut);
                 downloadFile(mSession, mCurrentPath + mSrcPath, mOut, mSpm);
                 result = true;
 
             } catch (Exception e) {
                 Log.e(TAG, "EXCEPTION " + e.getMessage());
 
-            }
-            finally {
+            } finally {
                 return result;
             }
         }
