@@ -75,12 +75,16 @@ public class SessionController {
         return sSessionController;
     }
 
-
+    /**
+     * Gets the JSch SSH session instance
+     * @return session
+     */
     public Session getSession() {
         return mSession;
     }
 
     /**
+     * Private constructor
      * @param sessionUserInfo The SessionUserInfo to be used by all SSH channels.
      */
     private SessionController(SessionUserInfo sessionUserInfo) {
@@ -89,11 +93,19 @@ public class SessionController {
 
     }
 
+    /**
+     * Sets the user info for Session connection. User info includes
+     * username, hostname and user password.
+     * @param sessionUserInfo Session User Info
+     */
     public void setUserInfo(SessionUserInfo sessionUserInfo) {
         mSessionUserInfo = sessionUserInfo;
     }
 
 
+    /**
+     * Opens SSH connection to remote host.
+     */
     public void connect() {
         if (mSession == null) {
             mThread = new Thread(new SshRunnable());
@@ -104,6 +116,10 @@ public class SessionController {
         }
     }
 
+    /**
+     * Returns the SFTP controller instance.
+     * @return SftpController
+     */
     public SftpController getSftpController(){
         return mSftpController;
     }
@@ -116,8 +132,8 @@ public class SessionController {
     /**
      * Uploads files to remote server.
      *
-     * @param files
-     * @param spm
+     * @param files list of files to upload
+     * @param spm progress monitor, to monitor upload completion percentage
      */
     public void uploadFiles(File[] files, SftpProgressMonitor spm) {
         if (mSftpController == null) {
@@ -201,8 +217,8 @@ public class SessionController {
      * Execute command on remote server. If SSH is not open, SSH shell will be opened and
      * command executed.
      *
-     * @param command
-     * @return
+     * @param command command to execute on remote host.
+     * @return command sent true, if not false
      */
     public boolean executeCommand(Handler handler, EditText editText, ExecTaskCallbackHandler callback, String command) {
         if (mSession == null || !mSession.isConnected()) {
@@ -257,7 +273,7 @@ public class SessionController {
                 Log.e(TAG, "Exception:" + ex.getMessage());
             }
 
-            Log.d("SessionController", "Session !" + mSession.isConnected());
+            Log.d("SessionController", "Session connected? " + mSession.isConnected());
 
             new Thread(new Runnable() {
                 @Override

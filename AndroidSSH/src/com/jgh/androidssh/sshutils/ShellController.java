@@ -108,6 +108,7 @@ public class ShellController {
                                 public void run() {
                                     synchronized (myEditText) {
                                         myEditText.setText(myEditText.getText().toString() + "\r\n" + result + "\r\n");
+                                        Log.v(TAG, "LINE : "+result);
                                     }
                                 }
                             });
