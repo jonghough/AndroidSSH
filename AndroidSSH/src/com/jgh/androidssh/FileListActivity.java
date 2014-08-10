@@ -189,17 +189,21 @@ public class FileListActivity extends Activity implements OnItemClickListener, O
      * Shows the remote files on the listview.
      */
     private void showRemoteFiles() {
+        final ProgressDialog progressDialog = new ProgressDialog(FileListActivity.this, 0);
+        progressDialog.setIndeterminate(true);
+        progressDialog.setTitle("Retrieving remote file list");
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         try {
             mSessionController.listRemoteFiles(new TaskCallbackHandler() {
                 @Override
                 public void OnBegin() {
-
+                    progressDialog.show();
                 }
 
                 @Override
                 public void onFail() {
                     Log.e(TAG, "Fail listing remote files");
-
+                    progressDialog.dismiss();
                 }
 
                 @Override
@@ -207,12 +211,15 @@ public class FileListActivity extends Activity implements OnItemClickListener, O
                     mRemoteFileListAdapter = new RemoteFileListAdapter(FileListActivity.this, lsEntries);
                     mRemoteListView.setAdapter(mRemoteFileListAdapter);
                     mRemoteFileListAdapter.notifyDataSetChanged();
+                    progressDialog.dismiss();
                 }
             }, "");
         } catch (JSchException j) {
             Log.e(TAG, "ShowRemoteFiles exception " + j.getMessage());
+            progressDialog.dismiss();
         } catch (SftpException s) {
             Log.e(TAG, "ShowRemoteFiles exception " + s.getMessage());
+            progressDialog.dismiss();
         }
     }
 
