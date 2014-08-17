@@ -107,7 +107,7 @@ public class MainActivity extends Activity implements OnClickListener {
                     return false;
                 } else if (keyCode == KeyEvent.KEYCODE_ENTER) {
                     if (isEditTextEmpty(mCommandEdit)) {
-                        return true;
+                        return false;
                     }
 
                     if (mSUI == null) {
@@ -117,28 +117,33 @@ public class MainActivity extends Activity implements OnClickListener {
 
                     // run command
                     else {
-                        // get the last line of terminal
-                        String command = getLastLine();
-                        ExecTaskCallbackHandler t = new ExecTaskCallbackHandler() {
-                            @Override
-                            public void onFail() {
-                                makeToast(R.string.taskfail);
-                            }
+                        if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                            // get the last line of terminal
+                            String command = getLastLine();
+                            ExecTaskCallbackHandler t = new ExecTaskCallbackHandler() {
+                                @Override
+                                public void onFail() {
+                                    makeToast(R.string.taskfail);
+                                }
 
-                            @Override
-                            public void onComplete(String completeString) {
-                                mTextView.setText(mTextView.getText() + "\n" + completeString
-                                        + mUserEdit.getText().toString().trim() + "\n");
-                            }
-                        };
-                        mCommandEdit.AddLastInput(command);
-                        mSessionController.executeCommand(mHandler, mCommandEdit, t, command);
-
+                                @Override
+                                public void onComplete(String completeString) {
+                                    mTextView.setText(mTextView.getText() + "\n" + completeString
+                                            + mUserEdit.getText().toString().trim() + "\n");
+                                }
+                            };
+                            mCommandEdit.AddLastInput(command);
+                            Log.v(TAG, "command "+command);
+                            mSessionController.executeCommand(mHandler, mCommandEdit, t, command);
+                            return false;
+                        }
                     }
                 }
 
                 return false;
             }
+
+
         });
     }
 
@@ -230,7 +235,7 @@ public class MainActivity extends Activity implements OnClickListener {
     /**
      * @return
      */
-    private String getLastLine() {// unused
+    private String getLastLine() {
         int index = mCommandEdit.getText().toString().lastIndexOf("\n");
         if (index == -1) {
             return mCommandEdit.getText().toString().trim();
@@ -240,6 +245,18 @@ public class MainActivity extends Activity implements OnClickListener {
                 .substring(index, mCommandEdit.getText().toString().length());
 
         return lastLine.trim();
+    }
+
+    private String getSecondLastLine() {
+
+        String[] lines = mCommandEdit.getText().toString().split("\n");
+        if(lines == null || lines.length < 2)return mCommandEdit.getText().toString().trim();
+
+        else{
+            int len = lines.length;
+            String ln = lines[len - 2];
+            return ln.trim();
+        }
     }
 
     /**
