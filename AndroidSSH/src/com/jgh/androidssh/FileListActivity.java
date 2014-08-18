@@ -364,4 +364,29 @@ public class FileListActivity extends Activity implements OnItemClickListener, O
     }
 
 
+    /**
+     *  Drag Listener class. For dragging remote files to local and vice versa.
+     */
+    private class FileDragListener implements OnDragListener{
+
+        @Override
+        public boolean onDrag(View view, DragEvent dragEvent) {
+            switch(dragEvent.getAction()){
+                case DragEvent.ACTION_DRAG_STARTED: break; //TODO
+
+                case DragEvent.ACTION_DRAG_ENTERED: break; //TODO
+
+                case DragEvent.ACTION_DRAG_EXITED: break; //TODO
+
+                case DragEvent.ACTION_DROP: break; //TODO
+
+                case DragEvent.ACTION_DRAG_ENDED: break; //TODO
+
+                default: break;
+            }
+
+
+            return false;
+        }
+    }
 }
