@@ -41,6 +41,7 @@ public class MainActivity extends Activity implements OnClickListener {
     private EditText mUserEdit;
     private EditText mHostEdit;
     private EditText mPasswordEdit;
+    private EditText mPortNumEdit;
     private SshEditText mCommandEdit;
     private Button mButton, mEndSessionBtn, mSftpButton, mRunButton;
     private SessionUserInfo mSUI;
@@ -61,6 +62,7 @@ public class MainActivity extends Activity implements OnClickListener {
         mUserEdit = (EditText) findViewById(R.id.username);
         mHostEdit = (EditText) findViewById(R.id.hostname);
         mPasswordEdit = (EditText) findViewById(R.id.password);
+        mPortNumEdit = (EditText) findViewById(R.id.portnum);
         mButton = (Button) findViewById(R.id.enterbutton);
         mEndSessionBtn = (Button) findViewById(R.id.endsessionbutton);
         mSftpButton = (Button) findViewById(R.id.sftpbutton);
@@ -275,12 +277,13 @@ public class MainActivity extends Activity implements OnClickListener {
     public void onClick(View v) {
         if (v == mButton) {
             if (isEditTextEmpty(mUserEdit) || isEditTextEmpty(mHostEdit)
-                    || isEditTextEmpty(mPasswordEdit)) {
+                    || isEditTextEmpty(mPasswordEdit) ||isEditTextEmpty(mPortNumEdit)) {
                 return;
             }
+            int port = Integer.valueOf(mPortNumEdit.getText().toString());
             mSUI = new SessionUserInfo(mUserEdit.getText().toString().trim(), mHostEdit.getText()
                     .toString().trim(),
-                    mPasswordEdit.getText().toString().trim());
+                    mPasswordEdit.getText().toString().trim(),port);
             mSessionController = SessionController.getSessionController();
             mSessionController.setUserInfo(mSUI);
             mSessionController.connect();

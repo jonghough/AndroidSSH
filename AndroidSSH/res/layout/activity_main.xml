@@ -60,6 +60,24 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="#FF010101"
+                    android:text="port"
+                    android:textColor="#FF00FF00" />
+
+                <EditText
+                    android:id="@+id/portnum"
+                    android:layout_width="200dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:background="#FF010141"
+                    android:inputType="number"
+                    android:text="22"
+                    android:textColor="#FF00FF00"
+                    android:textCursorDrawable="@null" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#FF010101"
                     android:text="@string/password"
                     android:textColor="#FF00FF00" />
 

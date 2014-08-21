@@ -95,8 +95,6 @@ public class FileListActivity extends Activity implements OnItemClickListener, O
 
         mStateView = (TextView) findViewById(R.id.statetextview);
 
-
-        SessionUserInfo sui = new SessionUserInfo(mUserInfo[0], mUserInfo[1], mUserInfo[2]);
         mSessionController = SessionController.getSessionController();
         mSessionController.connect();
 
@@ -378,7 +376,8 @@ public class FileListActivity extends Activity implements OnItemClickListener, O
 
                 case DragEvent.ACTION_DRAG_EXITED: break; //TODO
 
-                case DragEvent.ACTION_DROP: break; //TODO
+                case DragEvent.ACTION_DROP:
+                    break; //TODO
 
                 case DragEvent.ACTION_DRAG_ENDED: break; //TODO
 

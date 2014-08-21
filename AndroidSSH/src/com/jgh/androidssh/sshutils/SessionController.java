@@ -256,7 +256,7 @@ public class SessionController {
             mSession = null;
             try {
                 mSession = jsch.getSession(mSessionUserInfo.getUser(), mSessionUserInfo.getHost(),
-                        22); // port 22
+                        mSessionUserInfo.getPort()); // port 22
 
                 mSession.setUserInfo(mSessionUserInfo);
 
