@@ -19,6 +19,10 @@ import com.jgh.androidssh.sshutils.SshExecutor;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Point;
+import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
@@ -135,7 +139,7 @@ public class FileListActivity extends Activity implements OnItemClickListener, O
         // change the list
         if (mFilenames.get(position).isDirectory()) {
             mRootFile = mFilenames.get(position);
-            Log.v(TAG, "ROOT FILE POSIITON IS " + mRootFile);
+            Log.d(TAG, "ROOT FILE POSIITON IS " + mRootFile);
             mFilenames.clear();
             if (mRootFile.listFiles() == null) {
                 return;
@@ -351,9 +355,9 @@ public class FileListActivity extends Activity implements OnItemClickListener, O
 
                     mSessionController.downloadFile(mRemoteFileListAdapter.getRemoteFiles().get(position).getFilename(), out, progressDialog);
                 } catch (JSchException je) {
-                    Log.v(TAG, "JschException " + je.getMessage());
+                    Log.d(TAG, "JschException " + je.getMessage());
                 } catch (SftpException se) {
-                    Log.v(TAG, "SftpException " + se.getMessage());
+                    Log.d(TAG, "SftpException " + se.getMessage());
                 }
             }
 
@@ -361,6 +365,39 @@ public class FileListActivity extends Activity implements OnItemClickListener, O
         }
     }
 
+
+    /**
+     * Drag shadow, for item dragging/dropping.
+     */
+    private class DragShadow extends View.DragShadowBuilder {
+
+        ColorDrawable mBox;
+
+        public DragShadow(View view) {
+            super(view);
+            mBox = new ColorDrawable(Color.GRAY);
+        }
+
+        @Override
+        public void onDrawShadow(Canvas canvas) {
+            mBox.draw(canvas);
+        }
+
+        @Override
+        public void onProvideShadowMetrics(Point shadowSize,
+                                           Point shadowTouchPoint) {
+
+            View v = getView();
+            int height = v.getHeight();
+            int width =  v.getWidth();
+
+            mBox.setBounds(0, 0, width, height);
+            shadowSize.set(width, height);
+
+            shadowTouchPoint.set(width / 2, height / 2);
+
+        }
+    }
 
     /**
      *  Drag Listener class. For dragging remote files to local and vice versa.
@@ -377,6 +414,9 @@ public class FileListActivity extends Activity implements OnItemClickListener, O
                 case DragEvent.ACTION_DRAG_EXITED: break; //TODO
 
                 case DragEvent.ACTION_DROP:
+                    if(view.getId()==R.id.listview){
+                        Log.d(TAG,"DROPPED");
+                    }
                     break; //TODO
 
                 case DragEvent.ACTION_DRAG_ENDED: break; //TODO
