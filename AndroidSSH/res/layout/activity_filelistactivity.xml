@@ -66,10 +66,13 @@
         android:layout_gravity="top"
         android:layout_weight=".4">
 
-        <ListView
+        <GridView
             android:id="@+id/remotelistview"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"></ListView>
+            android:layout_height="match_parent"
+            android:numColumns="2"
+            android:verticalSpacing="10dp"
+            android:horizontalSpacing="10dp"></GridView>
     </LinearLayout>
 
 </LinearLayout>

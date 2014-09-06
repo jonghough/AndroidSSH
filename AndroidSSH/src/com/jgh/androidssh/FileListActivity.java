@@ -33,6 +33,7 @@ import android.view.WindowManager.LayoutParams;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
+import android.widget.GridView;
 import android.widget.ListView;
 import android.view.DragEvent;
 
@@ -53,7 +54,8 @@ public class FileListActivity extends Activity implements OnItemClickListener, O
 
     private static final String TAG = "FileListActivity";
     private ArrayList<File> mFilenames = new ArrayList<File>();
-    private ListView mListView, mRemoteListView;
+    private ListView mListView;
+    private GridView mRemoteListView;
     private FileListAdapter mFileListAdapter;
     private RemoteFileListAdapter mRemoteFileListAdapter;
     private String[] mUserInfo;
@@ -79,7 +81,7 @@ public class FileListActivity extends Activity implements OnItemClickListener, O
 
         mUserInfo = getIntent().getExtras().getStringArray("UserInfo");
         mListView = (ListView) findViewById(R.id.listview);
-        mRemoteListView = (ListView) findViewById(R.id.remotelistview);
+        mRemoteListView = (GridView) findViewById(R.id.remotelistview);
         // Get external storage
         mRootFile = Environment.getExternalStorageDirectory();
         // list files
@@ -117,6 +119,7 @@ public class FileListActivity extends Activity implements OnItemClickListener, O
     }
 
     /**
+     * Sets up the remote file list.
      * @param remoteFileListAdapter
      */
     public void setupRemoteFiles(RemoteFileListAdapter remoteFileListAdapter) {
