@@ -54,8 +54,8 @@ public class FileListActivity extends Activity implements OnItemClickListener, O
 
     private static final String TAG = "FileListActivity";
     private ArrayList<File> mFilenames = new ArrayList<File>();
-    private ListView mListView;
-    private GridView mRemoteListView;
+    private GridView mLocalGridView;
+    private GridView mRemoteGridView;
     private FileListAdapter mFileListAdapter;
     private RemoteFileListAdapter mRemoteFileListAdapter;
     private String[] mUserInfo;
@@ -80,8 +80,8 @@ public class FileListActivity extends Activity implements OnItemClickListener, O
         setContentView(R.layout.activity_filelistactivity);
 
         mUserInfo = getIntent().getExtras().getStringArray("UserInfo");
-        mListView = (ListView) findViewById(R.id.listview);
-        mRemoteListView = (GridView) findViewById(R.id.remotelistview);
+        mLocalGridView = (GridView) findViewById(R.id.listview);
+        mRemoteGridView = (GridView) findViewById(R.id.remotelistview);
         // Get external storage
         mRootFile = Environment.getExternalStorageDirectory();
         // list files
@@ -91,8 +91,8 @@ public class FileListActivity extends Activity implements OnItemClickListener, O
 
         mFileListAdapter = new FileListAdapter(this, mFilenames);
 
-        mListView.setAdapter(mFileListAdapter);
-        mListView.setOnItemClickListener(this);
+        mLocalGridView.setAdapter(mFileListAdapter);
+        mLocalGridView.setOnItemClickListener(this);
         //----------------- buttons ---------------//
         mUpButton = (Button) findViewById(R.id.upbutton);
         mUpButton.setOnClickListener(this);
@@ -105,7 +105,7 @@ public class FileListActivity extends Activity implements OnItemClickListener, O
         mSessionController.connect();
 
         mRemoteClickListener = new RemoteClickListener();
-        mRemoteListView.setOnItemClickListener(mRemoteClickListener);
+        mRemoteGridView.setOnItemClickListener(mRemoteClickListener);
 
 
         if (mSessionController.getSession().isConnected()) {
@@ -124,7 +124,7 @@ public class FileListActivity extends Activity implements OnItemClickListener, O
      */
     public void setupRemoteFiles(RemoteFileListAdapter remoteFileListAdapter) {
         mRemoteFileListAdapter = remoteFileListAdapter;
-        mRemoteListView.setAdapter(mRemoteFileListAdapter);
+        mRemoteGridView.setAdapter(mRemoteFileListAdapter);
         remoteFileListAdapter.notifyDataSetChanged();
 
     }
@@ -152,7 +152,7 @@ public class FileListActivity extends Activity implements OnItemClickListener, O
             }
 
             setAdapter(mFilenames);
-            mListView.setAdapter(mFileListAdapter);
+            mLocalGridView.setAdapter(mFileListAdapter);
             mFileListAdapter.notifyDataSetChanged();
 
         } else {
@@ -181,7 +181,7 @@ public class FileListActivity extends Activity implements OnItemClickListener, O
                 }
 
                 setAdapter(mFilenames);
-                mListView.setAdapter(mFileListAdapter);
+                mLocalGridView.setAdapter(mFileListAdapter);
                 mFileListAdapter.notifyDataSetChanged();
             }
 
@@ -214,7 +214,7 @@ public class FileListActivity extends Activity implements OnItemClickListener, O
                 @Override
                 public void onTaskFinished(Vector<ChannelSftp.LsEntry> lsEntries) {
                     mRemoteFileListAdapter = new RemoteFileListAdapter(FileListActivity.this, lsEntries);
-                    mRemoteListView.setAdapter(mRemoteFileListAdapter);
+                    mRemoteGridView.setAdapter(mRemoteFileListAdapter);
                     mRemoteFileListAdapter.notifyDataSetChanged();
                     progressDialog.dismiss();
                 }
@@ -329,7 +329,7 @@ public class FileListActivity extends Activity implements OnItemClickListener, O
                         @Override
                         public void onTaskFinished(Vector<ChannelSftp.LsEntry> lsEntries) {
                             mRemoteFileListAdapter = new RemoteFileListAdapter(FileListActivity.this, lsEntries);
-                            mRemoteListView.setAdapter(mRemoteFileListAdapter);
+                            mRemoteGridView.setAdapter(mRemoteFileListAdapter);
                             mRemoteFileListAdapter.notifyDataSetChanged();
                             mIsProcessing = false;
                             progressDialog.dismiss();
