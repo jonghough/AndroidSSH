@@ -11,7 +11,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.jgh.androidssh.R;
 
 /**
  * Adapter for ListView. Holds current local directory
@@ -55,8 +58,10 @@ public class FileListAdapter extends BaseAdapter {
 
             convertView = mInflater.inflate(com.jgh.androidssh.R.layout.listview_item, null);
 
+            ImageView imageView = (ImageView)convertView.findViewById(com.jgh.androidssh.R.id.imageview_item);
             TextView textView = (TextView) convertView.findViewById(com.jgh.androidssh.R.id.textview_item);
             holder.textView = textView;
+            holder.imageView = imageView;
             // change text color for directories
             convertView.setTag(holder);
         }
@@ -67,9 +72,11 @@ public class FileListAdapter extends BaseAdapter {
         holder.textView.setText(mFiles.get(position).getName());
         if (mFiles.get(position).isDirectory()) {
             holder.color = 0xff009999;
+            holder.imageView.setImageResource(R.drawable.folder);
         }
         else{
-            holder.color = 0xffff8888;;
+            holder.color = 0xffff8888;
+            holder.imageView.setImageResource(R.drawable.file);
         }
 
         holder.textView.setTextColor(holder.color);
@@ -85,7 +92,7 @@ public class FileListAdapter extends BaseAdapter {
      * @author Jonathan Hough
      */
     private class ViewHolder {
-
+        ImageView imageView;
         TextView textView;
         int color;
     }
