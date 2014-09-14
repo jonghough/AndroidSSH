@@ -5,9 +5,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.jcraft.jsch.ChannelSftp;
+import com.jgh.androidssh.R;
 
 import java.io.File;
 import java.lang.reflect.Array;
@@ -54,9 +56,10 @@ public class RemoteFileListAdapter extends BaseAdapter {
             holder = new ViewHolder();
 
             convertView = mInflater.inflate(com.jgh.androidssh.R.layout.listview_item, null);
-
+            ImageView imageView = (ImageView)convertView.findViewById(com.jgh.androidssh.R.id.imageview_item);
             TextView textView = (TextView) convertView.findViewById(com.jgh.androidssh.R.id.textview_item);
             holder.textView = textView;
+            holder.imageView = imageView;
             // change text color for directories
             convertView.setTag(holder);
         }
@@ -67,9 +70,11 @@ public class RemoteFileListAdapter extends BaseAdapter {
         holder.textView.setText(mFiles.get(position).getFilename());
         if (mFiles.get(position).getAttrs().isDir()) {
             holder.color = 0xff0099ff;
+            holder.imageView.setImageResource(R.drawable.folder);
         }
         else{
             holder.color = 0xffff8888;
+            holder.imageView.setImageResource(R.drawable.file);
         }
 
         holder.textView.setTextColor(holder.color);
@@ -84,7 +89,7 @@ public class RemoteFileListAdapter extends BaseAdapter {
      * @author Jonathan Hough
      */
     private class ViewHolder {
-
+        ImageView imageView;
         TextView textView;
         int color;
     }
