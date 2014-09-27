@@ -1,8 +1,6 @@
 package com.jgh.androidssh;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Vector;
 
@@ -12,8 +10,6 @@ import com.jcraft.jsch.SftpException;
 import com.jcraft.jsch.SftpProgressMonitor;
 import com.jgh.androidssh.adapters.FileListAdapter;
 import com.jgh.androidssh.adapters.RemoteFileListAdapter;
-import com.jgh.androidssh.sshutils.SessionUserInfo;
-import com.jgh.androidssh.sshutils.SshExecutor;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -22,18 +18,15 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.ColorDrawable;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnDragListener;
-import android.view.WindowManager.LayoutParams;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.GridView;
-import android.widget.ListView;
 import android.view.DragEvent;
 
 import com.jgh.androidssh.sshutils.SessionController;

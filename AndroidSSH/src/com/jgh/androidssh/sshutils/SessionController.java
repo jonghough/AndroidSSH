@@ -1,7 +1,5 @@
 package com.jgh.androidssh.sshutils;
 
-import android.content.Context;
-import android.os.AsyncTask;
 import android.os.Handler;
 import android.util.Log;
 import android.widget.EditText;
@@ -9,19 +7,13 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.InterruptedException;
 
-import com.jcraft.jsch.Channel;
-import com.jcraft.jsch.ChannelExec;
-import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpException;
 import com.jcraft.jsch.SftpProgressMonitor;
-import com.jgh.androidssh.FileListActivity;
-import com.jgh.androidssh.adapters.RemoteFileListAdapter;
 
 import java.util.Properties;
-import java.util.Vector;
 
 /**
  * Controller for Jsch SSH sessions. All SSH

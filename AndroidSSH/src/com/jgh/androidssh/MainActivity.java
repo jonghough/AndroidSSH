@@ -3,18 +3,13 @@ package com.jgh.androidssh;
 
 import java.io.IOException;
 
-import com.jcraft.jsch.JSchException;
 import com.jgh.androidssh.sshutils.ConnectionStatusListener;
 import com.jgh.androidssh.sshutils.ExecTaskCallbackHandler;
 import com.jgh.androidssh.sshutils.SessionUserInfo;
-import com.jgh.androidssh.sshutils.SshExecutor;
 import com.jgh.androidssh.sshutils.SessionController;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
@@ -149,66 +144,6 @@ public class MainActivity extends Activity implements OnClickListener {
         });
     }
 
-    /**
-     * AsyncTask to run the command.
-     *
-     * @author Jonathan Hough
-     * @since Dec 4 2012
-     */
-    public class SshTask extends AsyncTask<Void, Void, Boolean> {
-
-        private SshExecutor mEx;
-
-        private ProgressDialog mProgressDialog;
-
-        //
-        // Constructor
-        //
-
-        public SshTask(Context context, SshExecutor exec) {
-            mEx = exec;
-            mProgressDialog = new ProgressDialog(context);
-
-        }
-
-        @Override
-        protected void onPreExecute() {
-
-            mProgressDialog.setTitle(getResources().getText(R.string.progress_runningcommand));
-            mProgressDialog.setMessage(getResources().getText(R.string.progress_pleasewait));
-            mProgressDialog.show();
-
-        }
-
-        @Override
-        protected Boolean doInBackground(Void... arg0) {
-            boolean success = false;
-            try {
-                mEx.executeCommand(mSessionController.getSession());
-            } catch (JSchException e) {
-
-                makeToast(R.string.taskfail);
-            } catch (IOException e) {
-                makeToast(R.string.taskfail);
-            }
-            success = true;
-            return success;
-        }
-
-        @Override
-        protected void onPostExecute(Boolean b) {
-            mProgressDialog.dismiss();
-
-            if (b) {
-                mTextView.setText(mTextView.getText() + "\n" + mEx.getString() + "\n"
-                        + mUserEdit.getText().toString().trim() + "\n");
-
-            } else {
-                makeToast(R.string.taskfail);
-            }
-
-        }
-    }
 
     /**
      * Displays toast to user.
