@@ -18,6 +18,7 @@ public class SshEditText extends EditText {
 
     private String mlastInput;
 
+    private String mPrompt = null;
     /**
      * First Constructor
      * @param context
@@ -72,7 +73,7 @@ public class SshEditText extends EditText {
      */
     public String peekLastInput() {
         synchronized (this) {
-            return mlastInput;
+            return new String(mlastInput);
         }
     }
 
@@ -117,5 +118,14 @@ public class SshEditText extends EditText {
         if (s == '\n' || s == '\r') return true;
 
         return false;
+    }
+
+    /**
+     * Sets the prompt string. If parameter is null, then the prompt parameter
+     * will also be null.
+     * @param prompt
+     */
+    public void setPrompt(String prompt){
+        mPrompt = prompt;
     }
 }

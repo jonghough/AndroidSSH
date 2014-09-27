@@ -7,6 +7,7 @@ import android.widget.EditText;
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
+import com.jgh.androidssh.SshEditText;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -69,6 +70,7 @@ public class ShellController {
     public void writeToOutput(String command) {
         if (mDataOutputStream != null) {
             try {
+                command = ShellController.removePrompt(command);
                 mDataOutputStream.writeBytes(command + "\r\n");
                 mDataOutputStream.flush();
             } catch (IOException e) {
@@ -109,8 +111,9 @@ public class ShellController {
                             myHandler.post(new Runnable() {
                                 public void run() {
                                     synchronized (myEditText) {
-                                        myEditText.setText(myEditText.getText().toString() + "\r\n" + result + "\r\n");
-                                        Log.v(TAG, "LINE : " + result);
+                                        ((SshEditText)myEditText).setPrompt(fetchPrompt(result));
+                                        myEditText.setText(myEditText.getText().toString() + "\r\n" + result + "\r\n"+fetchPrompt(result));
+                                        Log.d(TAG, "LINE : " + result);
                                     }
                                 }
                             });
@@ -123,6 +126,34 @@ public class ShellController {
         }).start();
     }
 
+    /**
+     *
+     * @param returnedString
+     * @return
+     */
+    public static String fetchPrompt(String returnedString){
+        if(returnedString != null && returnedString.trim().split("$").length > 0){
+            return returnedString.trim().split("$")[0];
+        }
+        else return "";
+    }
+
+    /**
+     * Removes the prompt string from the user input command.
+     * @param command
+     * @return
+     */
+    public static String removePrompt(String command){
+        if(command != null && command.trim().split("\\$").length > 1){
+            String[] split = command.trim().split("\\$");
+            String s = "";
+            for(int i = 1; i< split.length; i++){
+                s += split[i];
+            }
+            return s;
+        }
+        return command;
+    }
 }
 
 

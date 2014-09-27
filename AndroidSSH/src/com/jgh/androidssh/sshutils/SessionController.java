@@ -230,6 +230,7 @@ public class SessionController {
 
                 try {
                     mShellController.openShell(getSession(), handler, editText);
+
                 } catch (Exception e) {
                     Log.e(TAG, "Shell open exception "+e.getMessage());
                     //TODO fix general exception catching
