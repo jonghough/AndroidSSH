@@ -13,7 +13,6 @@ import com.jcraft.jsch.SftpProgressMonitor;
 import com.jgh.androidssh.adapters.FileListAdapter;
 import com.jgh.androidssh.adapters.RemoteFileListAdapter;
 import com.jgh.androidssh.sshutils.SessionUserInfo;
-import com.jgh.androidssh.sshutils.SftpExec;
 import com.jgh.androidssh.sshutils.SshExecutor;
 
 import android.app.Activity;
