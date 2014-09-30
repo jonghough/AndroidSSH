@@ -1,0 +1,171 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#FF010101">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#FF010101"
+                    android:text="@string/username"
+                    android:textColor="#FF00FF00" />
+
+                <EditText
+                    android:id="@+id/username"
+                    android:layout_width="200dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:background="#FF010141"
+                    android:inputType="text"
+                    android:textColor="#FF00FF00"
+                    android:textCursorDrawable="@null" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#FF010101"
+                    android:text="@string/hostname"
+                    android:textColor="#FF00FF00" />
+
+                <EditText
+                    android:id="@+id/hostname"
+                    android:layout_width="200dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:background="#FF010141"
+                    android:inputType="text"
+                    android:textColor="#FF00FF00"
+                    android:textCursorDrawable="@null" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#FF010101"
+                    android:text="port"
+                    android:textColor="#FF00FF00" />
+
+                <EditText
+                    android:id="@+id/portnum"
+                    android:layout_width="200dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:background="#FF010141"
+                    android:inputType="number"
+                    android:text="22"
+                    android:textColor="#FF00FF00"
+                    android:textCursorDrawable="@null" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#FF010101"
+                    android:text="@string/password"
+                    android:textColor="#FF00FF00" />
+
+                <EditText
+                    android:id="@+id/password"
+                    android:layout_width="200dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:background="#FF010141"
+                    android:inputType="textPassword"
+                    android:textColor="#FF00FF00"
+                    android:textCursorDrawable="@null" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <Button
+                        android:id="@+id/enterbutton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:text="@string/connect_btn" />
+
+                    <TextView
+                        android:id="@+id/connectstatus"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="#FF010101"
+                        android:textColor="#FF00FF00"
+                        android:text="Connect Status: " />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <EditText
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:minWidth="50dp"
+                        android:background="#FF010101"
+                        android:text="@string/command"
+                        android:textColor="#FF00FF00" />
+
+                    <Button
+                        android:id="@+id/runbutton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/runcommand" />
+
+
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/sshtext"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#FF010101"
+                    android:textColor="#FF00FF00" />
+
+                <com.jgh.androidssh.SshEditText
+                    android:id="@+id/command"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:background="#FF010141"
+                    android:gravity="top|left"
+                    android:inputType="textMultiLine"
+                    android:singleLine="true"
+                    android:minLines="6"
+                    android:textColor="#FF00FF00"
+                    android:textCursorDrawable="@null" />
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/sftpbutton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/filetransfer" />
+
+            <Button
+                android:id="@+id/endsessionbutton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="End session" />
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

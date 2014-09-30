@@ -1,0 +1,26 @@
+<resources>
+
+    <string name="app_name">AndroidSSH</string>
+    <string name="menu_settings">Settings</string>
+    <string name="input_information">Input Information</string>
+    <string name="username">Username</string>
+    <string name="hostname">Hostname</string>
+    <string name="password">Password</string>
+    <string name="connect_btn">Connect</string>
+    <string name="status">Status</string>
+    <string name="disconnect_btn">Disconnect</string>
+    <string name="status_connected">Connected</string>
+    <string name="status_disconnected">Disconnected</string>
+    <string name="command">Enter command</string>
+    <string name="runcommand">Run</string>
+    <string name="taskfail">Unable to complete command.</string>
+    <string name="progress_runningcommand">Running command</string>
+	<string name="progress_pleasewait">Please wait</string>
+	<string name="filetransfer">File transfer</string>
+	<string name="up">Up</string>
+    <string name="retrieve_remote_files">Retrieving remote file list</string>
+	
+	
+	<string name="insertallvalues">Please fill in username, hostname and password values.</string>
+	
+</resources>
