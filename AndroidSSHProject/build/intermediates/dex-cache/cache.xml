@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<pre-dex-items>
+
+    <item
+        dex="/home/jon/androidstudio/android-studio/projects/AndroidSSH/AndroidSSHProject/AndroidSSH/build/intermediates/pre-dexed/debug/classes-b0a2c87787c9e74ea2a5dac4ab835e4eb4ef06ff.jar"
+        jar="/home/jon/androidstudio/android-studio/projects/AndroidSSH/AndroidSSHProject/AndroidSSH/build/intermediates/exploded-aar/com.android.support/appcompat-v7/18.0.0/classes.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="8f11f56e350eacabf2273f646d981356eea0ed77"/>
+    <item
+        dex="/home/jon/androidstudio/android-studio/projects/AndroidSSH/AndroidSSHProject/AndroidSSH/build/intermediates/pre-dexed/debug/support-v4-18.0.0-27692611761c5ad1c1d72de99cdc7a3c0e8d6d4c.jar"
+        jar="/home/jon/android-studio/android-studio/sdk/extras/android/m2repository/com/android/support/support-v4/18.0.0/support-v4-18.0.0.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="44ec51e9d395a47aab135e5e1b556c0007442156"/>
+    <item
+        dex="/home/jon/androidstudio/android-studio/projects/AndroidSSH/AndroidSSHProject/AndroidSSH/build/intermediates/pre-dexed/debug/jsch-0.1.51-e49ab4715de97cf324b23fec6d451c796b746ef4.jar"
+        jar="/home/jon/.gradle/caches/modules-2/files-2.1/com.jcraft/jsch/0.1.51/6ceee2696b07cc320d0e1aaea82c7b40768aca0f/jsch-0.1.51.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="6ceee2696b07cc320d0e1aaea82c7b40768aca0f"/>
+
+</pre-dex-items>

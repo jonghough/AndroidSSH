@@ -24,9 +24,24 @@ import java.io.InputStreamReader;
 public class ShellController {
 
     public static final String TAG = "ShellController";
+    /**
+     *
+     */
     private BufferedReader mBufferedReader;
+
+    /**
+     *
+     */
     private DataOutputStream mDataOutputStream;
+
+    /**
+     *
+     */
     private Channel mChannel;
+
+    /**
+     *
+     */
     private String mSshText = null;
 
 
@@ -37,8 +52,8 @@ public class ShellController {
 
     /**
      * Gets the dataoutputstream
-     *
-     * @return
+     * (IO stream to remote server)
+     * @return dataOutputStream
      */
     public DataOutputStream getDataOutputStream() {
         return mDataOutputStream;
@@ -127,7 +142,7 @@ public class ShellController {
     }
 
     /**
-     *
+     * Gets the prompt text from the returned string.
      * @param returnedString
      * @return
      */
