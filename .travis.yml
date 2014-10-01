@@ -24,4 +24,5 @@ android:
   #  - sys-img-x86-android-17
 
 #script: ./AndroidSSHProject/AndroidSSH/build.gradle
-gradle build connectedCheck
+script:
+    - gradle build connectedCheck
