@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/AndroidSSH/AndroidSSH.iml" filepath="$PROJECT_DIR$/AndroidSSH/AndroidSSH.iml" />
       <module fileurl="file://$PROJECT_DIR$/AndroidSSHProject.iml" filepath="$PROJECT_DIR$/AndroidSSHProject.iml" />
+      <module fileurl="file://$PROJECT_DIR$/androidssh2/androidssh2.iml" filepath="$PROJECT_DIR$/androidssh2/androidssh2.iml" />
     </modules>
   </component>
 </project>

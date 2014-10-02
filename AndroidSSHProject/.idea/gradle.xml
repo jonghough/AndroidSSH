@@ -9,6 +9,7 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/AndroidSSH" />
+            <option value="$PROJECT_DIR$/androidssh2" />
           </set>
         </option>
       </GradleProjectSettings>

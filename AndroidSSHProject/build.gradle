@@ -1,5 +1,5 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
-buildscript {
+/*buildscript {
     repositories {
         mavenCentral()
     }
@@ -8,7 +8,6 @@ buildscript {
         classpath 'com.neenbedankt.gradle.plugins:android-apt:1.4'
     }
 }
-apply plugin: 'android'
 
 repositories {
     mavenCentral()
@@ -28,3 +27,4 @@ dependencies {
 	compile 'com.android.support:appcompat-v7:+'
     compile 'com.jcraft:jsch:0.1.51'
 }
+*/

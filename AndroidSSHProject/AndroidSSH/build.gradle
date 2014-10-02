@@ -3,10 +3,11 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:0.13.0'
+        classpath 'com.android.tools.build:gradle:0.12.0'
+        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.4'
     }
 }
-apply plugin: 'android'
+apply plugin: 'com.android.application'
 
 repositories {
     mavenCentral()
@@ -19,6 +20,11 @@ android {
     defaultConfig {
         minSdkVersion 7
         targetSdkVersion 18
+    }
+    sourceSets {
+        main {
+          //  manifest.srcFile 'AndroidSSH/src/main/AndroidManifest.xml'
+        }
     }
 }
 
