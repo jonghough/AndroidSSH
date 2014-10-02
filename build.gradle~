@@ -1,4 +1,4 @@
-/*buildscript {
+buildscript {
     repositories {
         mavenCentral()
     }
@@ -26,4 +26,4 @@ android {
 dependencies {
 	compile 'com.android.support:appcompat-v7:+'
     compile 'com.jcraft:jsch:0.1.51'
-}*/
+}
