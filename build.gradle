@@ -12,3 +12,4 @@ allprojects {
         mavenCentral()
     }
 }
+task check{}
