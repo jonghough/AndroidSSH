@@ -23,5 +23,5 @@ android:
    # - sys-img-armeabi-v7a-android-19
   #  - sys-img-x86-android-17
 
-script: ./gradle check
+script: ./gradlew check
 #script: gradle check
