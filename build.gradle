@@ -12,6 +12,4 @@ allprojects {
         mavenCentral()
     }
 }
-task check(type: wrapper){
-  assembleDebug
-}
+task check{}
