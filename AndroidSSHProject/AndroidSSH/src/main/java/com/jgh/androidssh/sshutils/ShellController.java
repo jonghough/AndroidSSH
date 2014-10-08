@@ -25,22 +25,23 @@ public class ShellController {
 
     public static final String TAG = "ShellController";
     /**
-     *
+     * For reading streamed data
      */
     private BufferedReader mBufferedReader;
 
     /**
-     *
+     * Data output stream, for sending data to remote
+     * SSH server.
      */
     private DataOutputStream mDataOutputStream;
 
     /**
-     *
+     * The JSch channel used for the shell connection.
      */
     private Channel mChannel;
 
     /**
-     *
+     * Display the recieved data.
      */
     private String mSshText = null;
 
