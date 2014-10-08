@@ -12,6 +12,6 @@ allprojects {
         mavenCentral()
     }
 }
-task check{
- ./gradlew assembleDebug
+task check(type: wrapper){
+  assembleDebug
 }
