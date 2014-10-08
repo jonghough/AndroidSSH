@@ -25,4 +25,5 @@ android:
 
 #script: ./gradlew build connectedCheck
 script: 
-     - gradle check
+     #- gradle check
+  - TERM=dumb ./gradlew test assembleDebug
