@@ -25,6 +25,6 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v4:20.0.0'
+    compile 'com.android.support:appcompat-v7:19.+'
     compile 'com.jcraft:jsch:0.1.51'
 }
