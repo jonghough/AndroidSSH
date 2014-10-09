@@ -1,1 +1,1 @@
-include ':AndroidSSH'
+include ':app'
