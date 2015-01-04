@@ -291,10 +291,12 @@ public class MainActivity extends Activity implements OnClickListener {
 
             }
         } else if (v == this.mEndSessionBtn) {
-            try {
-                mSessionController.disconnect();
-            } catch (IOException e) {
-                Log.e(TAG, "Disconnect exception " + e.getMessage());
+            if(mSessionController.getSession().isConnected()) {
+                try {
+                    mSessionController.disconnect();
+                } catch (IOException e) {
+                    Log.e(TAG, "Disconnect exception " + e.getMessage());
+                }
             }
         }
 
