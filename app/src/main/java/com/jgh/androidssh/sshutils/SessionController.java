@@ -271,7 +271,6 @@ public class SessionController {
                 @Override
                 public void run() {
                     while (true) {
-
                         //keep track of connection status
                         try {
                             Thread.sleep(2000);
