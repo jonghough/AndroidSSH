@@ -152,7 +152,9 @@
                     android:singleLine="true"
                     android:minLines="6"
                     android:textColor="#FF00FF00"
-                    android:textCursorDrawable="@null" />
+                    android:textCursorDrawable="@null"
+                    android:imeOptions="actionGo"
+                      />
             </LinearLayout>
 
             <Button
