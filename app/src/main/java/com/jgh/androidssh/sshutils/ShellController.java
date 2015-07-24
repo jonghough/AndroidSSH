@@ -127,7 +127,7 @@ public class ShellController {
                             myHandler.post(new Runnable() {
                                 public void run() {
                                     synchronized (myEditText) {
-                                        ((SshEditText)myEditText).setPrompt(fetchPrompt(result));
+                                        ((SshEditText)myEditText).setPrompt(result); //set the prompt to be the current line, so eventually it will be the last line.
                                         myEditText.setText(myEditText.getText().toString() + "\r\n" + result + "\r\n"+fetchPrompt(result));
                                         Log.d(TAG, "LINE : " + result);
                                     }

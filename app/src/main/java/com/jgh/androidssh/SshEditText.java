@@ -20,7 +20,7 @@ public class SshEditText extends EditText {
 
     private String mlastInput;
 
-    private String mPrompt = null;
+    private String mPrompt = "";
     /**
      * First Constructor
      * @param context
@@ -132,7 +132,11 @@ public class SshEditText extends EditText {
      * will also be null.
      * @param prompt
      */
-    public void setPrompt(String prompt){
+    public synchronized void setPrompt(String prompt){
         mPrompt = prompt;
+    }
+
+    public synchronized String getPrompt(){
+        return mPrompt;
     }
 }

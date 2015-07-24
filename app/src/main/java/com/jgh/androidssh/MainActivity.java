@@ -2,6 +2,7 @@
 package com.jgh.androidssh;
 
 import java.io.IOException;
+import java.util.regex.Pattern;
 
 
 import android.app.Activity;
@@ -46,6 +47,7 @@ public class MainActivity extends Activity implements OnClickListener {
 
     private Handler mHandler;
     private Handler mTvHandler;
+    private String mLastLine;
 
     @Override
     public void onCreate(Bundle bundle) {
@@ -91,59 +93,65 @@ public class MainActivity extends Activity implements OnClickListener {
 
             @Override
             public void afterTextChanged(Editable editable) {
+                String[] sr = editable.toString().split("\r\n");
+                String s = sr[sr.length-1];
+                Log.v(TAG, "after change "+s);
+                mLastLine = s;
 
             }
         });
 
-//        mCommandEdit.setOnKeyListener(new View.OnKeyListener() {
-//            public boolean onKey(View v, int keyCode, KeyEvent event) {
-//
-//                if (keyCode == KeyEvent.KEYCODE_DEL) {
-//                    if (mCommandEdit.getCurrentCursorLine() < mCommandEdit.getLineCount() - 1 || mCommandEdit.isNewLine()) {
-//                        mCommandEdit.setSelection(mCommandEdit.getText().length());
-//                        return true;
-//                    }
-//                    return false;
-//                } else if (keyCode == KeyEvent.KEYCODE_ENTER) {
-//                    if (isEditTextEmpty(mCommandEdit)) {
-//                        return false;
-//                    }
-//
-//                    if (mSUI == null) {
-//                        makeToast(R.string.insertallvalues);
-//                        return true;
-//                    }
-//
-//                    // run command
-//                    else {
-//                        if (event.getAction() == KeyEvent.ACTION_DOWN) {
-//                            // get the last line of terminal
-//                            String command = getLastLine();
-//                            ExecTaskCallbackHandler t = new ExecTaskCallbackHandler() {
-//                                @Override
-//                                public void onFail() {
-//                                    makeToast(R.string.taskfail);
-//                                }
-//
-//                                @Override
-//                                public void onComplete(String completeString) {
-//                                    mTextView.setText(mTextView.getText() + "\n" + completeString
-//                                            + mUserEdit.getText().toString().trim() + "\n");
-//                                }
-//                            };
-//                            mCommandEdit.AddLastInput(command);
-//                            Log.v(TAG, "command " + command);
-//                            mSessionController.executeCommand(mHandler, mCommandEdit, t, command);
-//                            return false;
-//                        }
-//                    }
-//                }
-//
-//                return false;
-//            }
-//
-//
-//        });
+        mCommandEdit.setOnKeyListener(new View.OnKeyListener() {
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+
+                if (keyCode == KeyEvent.KEYCODE_DEL) {
+                    if (mCommandEdit.getCurrentCursorLine() < mCommandEdit.getLineCount() - 1 || mCommandEdit.isNewLine()) {
+                        mCommandEdit.setSelection(mCommandEdit.getText().length());
+                        return true;
+                    }
+                    return false;
+                }
+
+                /*else if (keyCode == KeyEvent.KEYCODE_ENTER) {
+                    if (isEditTextEmpty(mCommandEdit)) {
+                        return false;
+                    }
+
+                    if (mSUI == null) {
+                        makeToast(R.string.insertallvalues);
+                        return true;
+                    }
+
+                    // run command
+                    else {
+                        if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                            // get the last line of terminal
+                            String command = getLastLine();
+                            ExecTaskCallbackHandler t = new ExecTaskCallbackHandler() {
+                                @Override
+                                public void onFail() {
+                                    makeToast(R.string.taskfail);
+                                }
+
+                                @Override
+                                public void onComplete(String completeString) {
+                                    mTextView.setText(mTextView.getText() + "\n" + completeString
+                                            + mUserEdit.getText().toString().trim() + "\n");
+                                }
+                            };
+                            mCommandEdit.AddLastInput(command);
+                            Log.v(TAG, "command " + command);
+                            mSessionController.executeCommand(mHandler, mCommandEdit, t, command);
+                            return false;
+                        }
+                    }
+                }*/
+
+                return false;
+            }
+
+
+        });
 
         mCommandEdit.setOnEditorActionListener(
                 new TextView.OnEditorActionListener() {
@@ -224,9 +232,11 @@ public class MainActivity extends Activity implements OnClickListener {
             return mCommandEdit.getText().toString().trim();
         }
 
-        String lastLine = mCommandEdit.getText().toString()
-                .substring(index, mCommandEdit.getText().toString().length());
-
+//        String lastLine = mCommandEdit.getText().toString()
+//                .substring(index, mCommandEdit.getText().toString().length());
+        String[] lines = mLastLine.split(Pattern.quote(mCommandEdit.getPrompt()));
+        String lastLine = mLastLine.replace(mCommandEdit.getPrompt().trim(), "");
+        Log.d(TAG, "command is "+lastLine+", prompt is  "+mCommandEdit.getPrompt());
         return lastLine.trim();
     }
 
