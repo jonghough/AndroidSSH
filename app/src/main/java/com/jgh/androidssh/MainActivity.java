@@ -40,7 +40,7 @@ public class MainActivity extends Activity implements OnClickListener {
     private EditText mPasswordEdit;
     private EditText mPortNumEdit;
     private SshEditText mCommandEdit;
-    private Button mButton, mEndSessionBtn, mSftpButton, mRunButton;
+    private Button mButton, mEndSessionBtn, mSftpButton;
     private SessionUserInfo mSUI;
 
     private SessionController mSessionController;
@@ -65,14 +65,12 @@ public class MainActivity extends Activity implements OnClickListener {
         mButton = (Button) findViewById(R.id.enterbutton);
         mEndSessionBtn = (Button) findViewById(R.id.endsessionbutton);
         mSftpButton = (Button) findViewById(R.id.sftpbutton);
-        mRunButton = (Button) findViewById(R.id.runbutton);
         mTextView = (TextView) findViewById(R.id.sshtext);
         mCommandEdit = (SshEditText) findViewById(R.id.command);
         mConnectStatus = (TextView) findViewById(R.id.connectstatus);
         // set onclicklistener
         mButton.setOnClickListener(this);
         mEndSessionBtn.setOnClickListener(this);
-        mRunButton.setOnClickListener(this);
         mSftpButton.setOnClickListener(this);
 
         mConnectStatus.setText("Connect Status: NOT CONNECTED");
@@ -301,41 +299,6 @@ public class MainActivity extends Activity implements OnClickListener {
                     });
                 }
             });
-
-        } else if (v == mRunButton) {
-            // check valid data
-            if (isEditTextEmpty(mCommandEdit)) {
-                return;
-            }
-
-            if (mSUI == null) {
-                makeToast(R.string.insertallvalues);
-                return;
-            }
-
-            // run command
-            else {
-
-
-                // get the last line of terminal
-                String command = getLastLine();
-                ExecTaskCallbackHandler t = new ExecTaskCallbackHandler() {
-                    @Override
-                    public void onFail() {
-                        makeToast(R.string.taskfail);
-                    }
-
-                    @Override
-                    public void onComplete(String completeString) {
-                        mTextView.setText(mTextView.getText() + "\n" + completeString
-                                + mUserEdit.getText().toString().trim() + "\n");
-                    }
-                };
-                mCommandEdit.AddLastInput(command);
-                mSessionController.executeCommand(mHandler, mCommandEdit, t, command);
-
-
-            }
 
         } else if (v == mSftpButton) {
             if (mSUI != null) {

@@ -96,7 +96,7 @@ public class SftpController {
     /**
      * Disconnects SFTP.
      */
-    public synchronized void disconnect() {
+    public void disconnect() {
         //nothing yet
     }
 

@@ -117,19 +117,13 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
 
-                    <EditText
+                    <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:minWidth="50dp"
                         android:background="#FF010101"
                         android:text="@string/command"
                         android:textColor="#FF00FF00" />
-
-                    <Button
-                        android:id="@+id/runbutton"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/runcommand" />
 
 
                 </LinearLayout>

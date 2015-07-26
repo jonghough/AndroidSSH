@@ -86,7 +86,6 @@ public class ShellController {
     public void writeToOutput(String command) {
         if (mDataOutputStream != null) {
             try {
-                command = ShellController.removePrompt(command);
                 mDataOutputStream.writeBytes(command + "\r\n");
                 mDataOutputStream.flush();
             } catch (IOException e) {
