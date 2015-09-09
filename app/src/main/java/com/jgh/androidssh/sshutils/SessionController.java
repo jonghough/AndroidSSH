@@ -85,6 +85,26 @@ public class SessionController {
     }
 
     /**
+     *
+     * @return
+     */
+    public static boolean exists(){
+        return sSessionController == null;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public static boolean isConnected(){
+        if(exists()){
+            if(getSessionController().getSession().isConnected())
+                return true;
+        }
+        return false;
+    }
+
+    /**
      * Sets the user info for Session connection. User info includes
      * username, hostname and user password.
      * @param sessionUserInfo Session User Info

@@ -1,9 +1,7 @@
 
 package com.jgh.androidssh;
 
-import java.io.IOException;
 import java.util.regex.Pattern;
-
 
 import android.app.Activity;
 import android.content.Intent;
@@ -109,42 +107,6 @@ public class MainActivity extends Activity implements OnClickListener {
                     }
                     return false;
                 }
-
-                /*else if (keyCode == KeyEvent.KEYCODE_ENTER) {
-                    if (isEditTextEmpty(mCommandEdit)) {
-                        return false;
-                    }
-
-                    if (mSUI == null) {
-                        makeToast(R.string.insertallvalues);
-                        return true;
-                    }
-
-                    // run command
-                    else {
-                        if (event.getAction() == KeyEvent.ACTION_DOWN) {
-                            // get the last line of terminal
-                            String command = getLastLine();
-                            ExecTaskCallbackHandler t = new ExecTaskCallbackHandler() {
-                                @Override
-                                public void onFail() {
-                                    makeToast(R.string.taskfail);
-                                }
-
-                                @Override
-                                public void onComplete(String completeString) {
-                                    mTextView.setText(mTextView.getText() + "\n" + completeString
-                                            + mUserEdit.getText().toString().trim() + "\n");
-                                }
-                            };
-                            mCommandEdit.AddLastInput(command);
-                            Log.v(TAG, "command " + command);
-                            mSessionController.executeCommand(mHandler, mCommandEdit, t, command);
-                            return false;
-                        }
-                    }
-                }*/
-
                 return false;
             }
 
@@ -230,8 +192,6 @@ public class MainActivity extends Activity implements OnClickListener {
             return mCommandEdit.getText().toString().trim();
         }
 
-//        String lastLine = mCommandEdit.getText().toString()
-//                .substring(index, mCommandEdit.getText().toString().length());
         String[] lines = mLastLine.split(Pattern.quote(mCommandEdit.getPrompt()));
         String lastLine = mLastLine.replace(mCommandEdit.getPrompt().trim(), "");
         Log.d(TAG, "command is "+lastLine+", prompt is  "+mCommandEdit.getPrompt());
@@ -307,13 +267,15 @@ public class MainActivity extends Activity implements OnClickListener {
 
             }
         } else if (v == this.mEndSessionBtn) {
-            if (mSessionController.getSession() != null && mSessionController.getSession().isConnected()) {
-                try {
+            try {
+                if (SessionController.isConnected()) {
+
                     mSessionController.disconnect();
-                } catch (IOException e) {
-                    Log.e(TAG, "Disconnect exception " + e.getMessage());
                 }
+            } catch (Throwable t) { //catch everything!
+                    Log.e(TAG, "Disconnect exception " + t.getMessage());
             }
+
         }
 
     }

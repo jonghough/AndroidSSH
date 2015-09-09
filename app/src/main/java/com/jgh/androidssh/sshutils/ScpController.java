@@ -7,6 +7,7 @@ import com.jcraft.jsch.Session;
 
 /**
  * Created by jon on 8/5/14.
+ * unused class.
  */
 public class ScpController {
 
