@@ -2,14 +2,17 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/almostblack"
     android:orientation="vertical">
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="@color/almostblack">
 
         <Button
             android:id="@+id/upbutton"
+            style="@style/buttonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
@@ -17,65 +20,86 @@
 
         <Button
             android:id="@+id/connectbutton"
+            style="@style/buttonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="connect"
             android:layout_alignParentTop="true"
-            android:layout_toRightOf="@+id/upbutton" />
+            android:layout_toRightOf="@+id/upbutton"
+            android:text="connect" />
 
         <TextView
             android:id="@+id/statetextview"
+            style="@style/textviewStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="connected"
+            android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:layout_alignParentRight="true" />
+            android:layout_toRightOf="@+id/connectbutton"
+            android:text="connected" />
     </RelativeLayout>
 
     <LinearLayout
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_gravity="top"
-        android:layout_weight=".4">
+        android:orientation="vertical"
+        android:weightSum="7">
 
-
-        <GridView
-            android:id="@+id/listview"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:numColumns="2"
-            android:verticalSpacing="10dp"
-            android:horizontalSpacing="10dp"/>
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="150dp"
-        android:layout_gravity="top"
-        android:layout_weight=".2">
-        <TextView
-            android:id="@+id/centertext"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="remote files"
-            android:layout_centerVertical="true"
-            android:layout_alignParentRight="true" />
-    </LinearLayout>
+            android:layout_gravity="top"
+            android:background="@color/almostblack"
+            android:layout_weight="3">
 
 
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="top"
-        android:layout_weight=".4">
+            <GridView
+                android:id="@+id/listview"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/almostblack"
+                android:horizontalSpacing="10dp"
+                android:verticalSpacing="10dp"
+                android:columnWidth="90dp"
+                android:numColumns="auto_fit"
+                android:stretchMode="columnWidth"
+                android:gravity="center"/>
+        </LinearLayout>
 
-        <GridView
-            android:id="@+id/remotelistview"
-            android:layout_width="match_parent"
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="150dp"
+            android:background="@color/almostblack"
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/centertext"
+                style="@style/editTextStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:text="remote files" />
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="fill_parent"
             android:layout_height="match_parent"
-            android:numColumns="2"
-            android:verticalSpacing="10dp"
-            android:horizontalSpacing="10dp"/>
-    </LinearLayout>
+            android:layout_gravity="top"
+            android:background="@color/almostblack"
+            android:layout_weight="3">
 
+            <GridView
+                android:id="@+id/remotelistview"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/almostblack"
+                android:horizontalSpacing="10dp"
+                android:verticalSpacing="10dp"
+                android:columnWidth="90dp"
+                android:numColumns="auto_fit"
+                android:stretchMode="columnWidth"
+                android:gravity="center"/>
+        </LinearLayout>
+    </LinearLayout>
 </LinearLayout>

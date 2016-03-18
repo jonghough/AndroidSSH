@@ -1,5 +1,33 @@
 <resources>
 
-    <style name="AppTheme" parent="android:Theme.Light" />
+    <style name="AndroidSSH" parent="android:Theme.Light" />
 
+    <style name="buttonStyle" parent="android:style/Widget.Button">
+        <item name="android:layout_margin">@dimen/layout_margin</item>
+        <item name="android:width">150dp</item>
+        <item name="android:height">50dp</item>
+        <item name="android:layout_gravity">left</item>
+        <item name="android:textColor">@color/almostblack</item>
+        <item name="android:background">@drawable/button_selector</item>
+        <item name="android:padding">@dimen/padding</item>
+    </style>
+
+    <style name="editTextStyle" parent="android:style/Widget.EditText">
+        <item name="android:layout_margin">@dimen/layout_margin</item>
+        <item name="android:width">150dp</item>
+        <item name="android:height">50dp</item>
+        <item name="android:layout_gravity">left</item>
+        <item name="android:textColor">@color/cybergreen</item>
+        <item name="android:background">@color/almostblack</item>
+        <item name="android:padding">@dimen/padding</item>
+    </style>
+    <style name="textviewStyle" parent="android:style/Widget.TextView">
+        <item name="android:minHeight">4dip</item>
+        <item name="android:thumbOffset">8dip</item>
+        <item name="android:focusable">true</item>
+        <item name="android:textColor">@color/cybergreen</item>
+        <item name="android:background">@color/almostblack</item>
+        <item name="android:padding">@dimen/padding</item>
+        <item name="android:layout_margin">@dimen/layout_margin</item>
+    </style>
 </resources>

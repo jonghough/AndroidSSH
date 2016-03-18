@@ -3,6 +3,7 @@ package com.jgh.androidssh.sshutils;
 import android.os.Handler;
 import android.util.Log;
 import android.widget.EditText;
+
 import java.io.File;
 import java.io.IOException;
 import java.lang.InterruptedException;
@@ -12,13 +13,13 @@ import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpException;
 import com.jcraft.jsch.SftpProgressMonitor;
+
 import java.util.Properties;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Controller for Jsch SSH sessions. All SSH
  * connections are run through this class.
- * <p/>
- * Created by Jon Hough on 3/25/14.
  */
 public class SessionController {
 
@@ -68,6 +69,7 @@ public class SessionController {
 
     /**
      * Gets the JSch SSH session instance
+     *
      * @return session
      */
     public Session getSession() {
@@ -76,6 +78,7 @@ public class SessionController {
 
     /**
      * Private constructor
+     *
      * @param sessionUserInfo The SessionUserInfo to be used by all SSH channels.
      */
     private SessionController(SessionUserInfo sessionUserInfo) {
@@ -85,20 +88,22 @@ public class SessionController {
     }
 
     /**
-     *
      * @return
      */
-    public static boolean exists(){
-        return sSessionController == null;
+    public static boolean exists() {
+        return sSessionController != null;
     }
 
     /**
+     * Checks if the session instance is connected.
      *
-     * @return
+     * @return True if connected, false otherwise.
      */
-    public static boolean isConnected(){
-        if(exists()){
-            if(getSessionController().getSession().isConnected())
+    public static boolean isConnected() {
+        Log.v(TAG, "session controller exists... " + exists());
+        if (exists()) {
+            Log.v(TAG, "disconnecting");
+            if (getSessionController().getSession().isConnected())
                 return true;
         }
         return false;
@@ -107,12 +112,16 @@ public class SessionController {
     /**
      * Sets the user info for Session connection. User info includes
      * username, hostname and user password.
+     *
      * @param sessionUserInfo Session User Info
      */
     public void setUserInfo(SessionUserInfo sessionUserInfo) {
         mSessionUserInfo = sessionUserInfo;
     }
 
+    public SessionUserInfo getSessionUserInfo() {
+        return mSessionUserInfo;
+    }
 
     /**
      * Opens SSH connection to remote host.
@@ -129,11 +138,13 @@ public class SessionController {
 
     /**
      * Returns the SFTP controller instance.
+     *
      * @return SftpController
      */
-    public SftpController getSftpController(){
+    public SftpController getSftpController() {
         return mSftpController;
     }
+
 
     public void setConnectionStatusListener(ConnectionStatusListener csl) {
         mConnectStatusListener = csl;
@@ -144,7 +155,7 @@ public class SessionController {
      * Uploads files to remote server.
      *
      * @param files list of files to upload
-     * @param spm progress monitor, to monitor upload completion percentage
+     * @param spm   progress monitor, to monitor upload completion percentage
      */
     public void uploadFiles(File[] files, SftpProgressMonitor spm) {
         if (mSftpController == null) {
@@ -176,6 +187,7 @@ public class SessionController {
 
     /**
      * Lists the files in the current directory on remote server.
+     *
      * @param taskCallbackHandler
      * @param path
      * @throws JSchException
@@ -200,27 +212,41 @@ public class SessionController {
 
     /**
      * Disconnects session and all channels.
+     *
      * @throws java.io.IOException
      */
     public void disconnect() throws IOException {
+
         if (mSession != null) {
-            if(mSftpController != null){
+            if (mSftpController != null) {
+
                 mSftpController.disconnect();
             }
-            if(mShellController != null){
-                mShellController.disconnect();
+            if (mShellController != null) {
+                try {
+                    mShellController.disconnect();
+                } catch (IOException e) {
+                    Log.e(TAG, "Exception closing shell controller. " + e.getMessage());
+                }
             }
-            if (mConnectStatusListener != null)
-                mConnectStatusListener.onDisconnected();
+            synchronized (mConnectStatusListener) {
+                if (mConnectStatusListener != null) {
+                    mConnectStatusListener.onDisconnected();
+                }
+            }
+
             mSession.disconnect();
         }
         if (mThread != null && mThread.isAlive()) {
             try {
                 mThread.join();
-            } catch (InterruptedException e) {
-                //
+            } catch (Exception e) {
+                Log.e(TAG, e.getMessage());
             }
         }
+
+        mSftpController = null;
+        mShellController = null;
     }
 
 
@@ -243,7 +269,7 @@ public class SessionController {
                     mShellController.openShell(getSession(), handler, editText);
 
                 } catch (Exception e) {
-                    Log.e(TAG, "Shell open exception "+e.getMessage());
+                    Log.e(TAG, "Shell open exception " + e.getMessage());
                     //TODO fix general exception catching
                 }
             }

@@ -19,7 +19,6 @@ import java.util.Vector;
  * ls, get, put commands between local device and remote SSH
  * server. For each process a new sftpchannel is opened and closed
  * after completion.
- * Created by Jon Hough on 4/19/14.
  */
 public class SftpController {
 
@@ -166,26 +165,6 @@ public class SftpController {
             //TODO
         }
 
-
-        /**
-         * Uploads the files in <b>localFiles</b> to the current directory on
-         * remote server.
-         *
-         * @param session    the Jsch SSH session instance
-         * @param localFiles array of files to be uploaded
-         * @param spd        progress monitor
-         * @return True if success, false otherwise.
-         * @throws JSchException
-         * @throws SftpException
-         * @throws java.io.IOException
-         * @deprecated
-         */
-        private boolean upload(Session session, File[] localFiles, SftpProgressMonitor spd) throws JSchException, SftpException, IOException {
-
-            boolean success = true;
-            uploadFiles(mSession, mLocalFiles, mProgressDialog);
-            return success;
-        }
     }
 
 

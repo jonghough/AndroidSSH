@@ -18,7 +18,6 @@ import com.jgh.androidssh.R;
  * Adapter for ListView. Holds current local directory
  * file list. Differentiates between directories and non-directories.
  *
- * @author Jonathan Hough
  */
 public class FileListAdapter extends BaseAdapter {
 
@@ -87,7 +86,6 @@ public class FileListAdapter extends BaseAdapter {
     /**
      * Private view holder class
      *
-     * @author Jonathan Hough
      */
     private class ViewHolder {
         ImageView imageView;

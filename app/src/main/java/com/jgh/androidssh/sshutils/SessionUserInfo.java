@@ -8,7 +8,6 @@ import com.jcraft.jsch.UserInfo;
  * connection using username, password and host address information.
  *
  * @author Jonathan Hough
- * @since Dec 4 2012
  */
 public class SessionUserInfo implements UserInfo {
 

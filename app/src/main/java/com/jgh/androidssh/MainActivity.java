@@ -4,6 +4,8 @@ package com.jgh.androidssh;
 import java.util.regex.Pattern;
 
 import android.app.Activity;
+import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -19,29 +21,22 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.jgh.androidssh.dialogs.SshConnectFragmentDialog;
 import com.jgh.androidssh.sshutils.ConnectionStatusListener;
 import com.jgh.androidssh.sshutils.ExecTaskCallbackHandler;
 import com.jgh.androidssh.sshutils.SessionController;
-import com.jgh.androidssh.sshutils.SessionUserInfo;
 
 /**
  * Main activity. Connect to SSH server and launch command shell.
  *
- * @author Jon Hough
  */
 public class MainActivity extends Activity implements OnClickListener {
 
     private static final String TAG = "MainActivity";
-    private TextView mTextView, mConnectStatus;
-    private EditText mUserEdit;
-    private EditText mHostEdit;
-    private EditText mPasswordEdit;
-    private EditText mPortNumEdit;
+    private TextView mConnectStatus;
+
     private SshEditText mCommandEdit;
     private Button mButton, mEndSessionBtn, mSftpButton;
-    private SessionUserInfo mSUI;
-
-    private SessionController mSessionController;
 
     private Handler mHandler;
     private Handler mTvHandler;
@@ -55,15 +50,9 @@ public class MainActivity extends Activity implements OnClickListener {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
 
         setContentView(R.layout.activity_main);
-
-        mUserEdit = (EditText) findViewById(R.id.username);
-        mHostEdit = (EditText) findViewById(R.id.hostname);
-        mPasswordEdit = (EditText) findViewById(R.id.password);
-        mPortNumEdit = (EditText) findViewById(R.id.portnum);
         mButton = (Button) findViewById(R.id.enterbutton);
         mEndSessionBtn = (Button) findViewById(R.id.endsessionbutton);
         mSftpButton = (Button) findViewById(R.id.sftpbutton);
-        mTextView = (TextView) findViewById(R.id.sshtext);
         mCommandEdit = (SshEditText) findViewById(R.id.command);
         mConnectStatus = (TextView) findViewById(R.id.connectstatus);
         // set onclicklistener
@@ -75,43 +64,43 @@ public class MainActivity extends Activity implements OnClickListener {
         //handlers
         mHandler = new Handler();
         mTvHandler = new Handler();
+
         //text change listener, for getting the current input changes.
         mCommandEdit.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
-
             }
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
-
             }
 
             @Override
             public void afterTextChanged(Editable editable) {
                 String[] sr = editable.toString().split("\r\n");
-                String s = sr[sr.length-1];
-                Log.v(TAG, "after change "+s);
+                String s = sr[sr.length - 1];
+                Log.v(TAG, "after change " + s);
                 mLastLine = s;
 
             }
         });
-
-        mCommandEdit.setOnKeyListener(new View.OnKeyListener() {
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-
-                if (keyCode == KeyEvent.KEYCODE_DEL) {
-                    if (mCommandEdit.getCurrentCursorLine() < mCommandEdit.getLineCount() - 1 || mCommandEdit.isNewLine()) {
-                        mCommandEdit.setSelection(mCommandEdit.getText().length());
-                        return true;
-                    }
-                    return false;
-                }
-                return false;
-            }
-
-
-        });
+//
+//        mCommandEdit.setOnKeyListener(new View.OnKeyListener() {
+//            public boolean onKey(View v, int keyCode, KeyEvent event) {
+//                Log.v("tag onkeylistener", "key code is "+keyCode);
+//                if (keyCode == KeyEvent.KEYCODE_DEL) {
+//                    if (mCommandEdit.getCurrentCursorLine() == mCommandEdit.getLineCount() - 1 || mCommandEdit.isNewLine()) {
+//                        mCommandEdit.setSelection(mCommandEdit.getText().length());
+//                        Log.v("TAG main ","deleting");
+//                        return true;
+//                    }
+//                    return false;
+//                }
+//                return false;
+//            }
+//
+//
+//        });
 
         mCommandEdit.setOnEditorActionListener(
                 new TextView.OnEditorActionListener() {
@@ -122,13 +111,11 @@ public class MainActivity extends Activity implements OnClickListener {
                             return false;
                         }
 
-                        if (mSUI == null) {
-                            makeToast(R.string.insertallvalues);
-                            return true;
-                        }
-
                         // run command
                         else {
+                            if (event == null || event.getAction() != KeyEvent.ACTION_DOWN) {
+                                return false;
+                            }
                             // get the last line of terminal
                             String command = getLastLine();
                             ExecTaskCallbackHandler t = new ExecTaskCallbackHandler() {
@@ -139,22 +126,17 @@ public class MainActivity extends Activity implements OnClickListener {
 
                                 @Override
                                 public void onComplete(String completeString) {
-                                    mTextView.setText(mTextView.getText() + "\n" + completeString
-                                            + mUserEdit.getText().toString().trim() + "\n");
+//                                    mTextView.setText(mTextView.getText() + "\n" + completeString
+//                                            + mUserEdit.getText().toString().trim() + "\n");
                                 }
                             };
                             mCommandEdit.AddLastInput(command);
-                            Log.v(TAG, "command " + command);
-                            mSessionController.executeCommand(mHandler, mCommandEdit, t, command);
+                            SessionController.getSessionController().executeCommand(mHandler, mCommandEdit, t, command);
                             return false;
                         }
-
-
                     }
-
-
-                });
-
+                }
+        );
     }
 
 
@@ -175,7 +157,9 @@ public class MainActivity extends Activity implements OnClickListener {
     private void startSftpActivity() {
         Intent intent = new Intent(this, FileListActivity.class);
         String[] info = {
-                mSUI.getUser(), mSUI.getHost(), mSUI.getPassword()
+                SessionController.getSessionController().getSessionUserInfo().getUser(),
+                SessionController.getSessionController().getSessionUserInfo().getHost(),
+                SessionController.getSessionController().getSessionUserInfo().getPassword()
         };
 
         intent.putExtra("UserInfo", info);
@@ -191,10 +175,13 @@ public class MainActivity extends Activity implements OnClickListener {
         if (index == -1) {
             return mCommandEdit.getText().toString().trim();
         }
-
+        if(mLastLine == null){
+            Toast.makeText(this, "no text to process", Toast.LENGTH_LONG);
+            return "";
+        }
         String[] lines = mLastLine.split(Pattern.quote(mCommandEdit.getPrompt()));
         String lastLine = mLastLine.replace(mCommandEdit.getPrompt().trim(), "");
-        Log.d(TAG, "command is "+lastLine+", prompt is  "+mCommandEdit.getPrompt());
+        Log.d(TAG, "command is " + lastLine + ", prompt is  " + mCommandEdit.getPrompt());
         return lastLine.trim();
     }
 
@@ -225,43 +212,10 @@ public class MainActivity extends Activity implements OnClickListener {
 
     public void onClick(View v) {
         if (v == mButton) {
-            if (isEditTextEmpty(mUserEdit) || isEditTextEmpty(mHostEdit)
-                    || isEditTextEmpty(mPasswordEdit) || isEditTextEmpty(mPortNumEdit)) {
-                return;
-            }
-            int port = Integer.valueOf(mPortNumEdit.getText().toString());
-            mSUI = new SessionUserInfo(mUserEdit.getText().toString().trim(), mHostEdit.getText()
-                    .toString().trim(),
-                    mPasswordEdit.getText().toString().trim(), port);
-            mSessionController = SessionController.getSessionController();
-            mSessionController.setUserInfo(mSUI);
-            mSessionController.connect();
-
-            mSessionController.setConnectionStatusListener(new ConnectionStatusListener() {
-                @Override
-                public void onDisconnected() {
-
-                    mTvHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            mConnectStatus.setText("Connection Status: NOT CONNECTED");
-                        }
-                    });
-                }
-
-                @Override
-                public void onConnected() {
-                    mTvHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            mConnectStatus.setText("Connection Status: CONNECTED");
-                        }
-                    });
-                }
-            });
+           showDialog();
 
         } else if (v == mSftpButton) {
-            if (mSUI != null) {
+            if (SessionController.isConnected()) {
 
                 startSftpActivity();
 
@@ -269,16 +223,52 @@ public class MainActivity extends Activity implements OnClickListener {
         } else if (v == this.mEndSessionBtn) {
             try {
                 if (SessionController.isConnected()) {
-
-                    mSessionController.disconnect();
+                    SessionController.getSessionController().disconnect();
                 }
             } catch (Throwable t) { //catch everything!
-                    Log.e(TAG, "Disconnect exception " + t.getMessage());
+                Log.e(TAG, "Disconnect exception " + t.getMessage());
             }
 
         }
 
     }
 
+    void showDialog() {
 
+        // DialogFragment.show() will take care of adding the fragment
+        // in a transaction.  We also want to remove any currently showing
+        // dialog, so make our own transaction and take care of that here.
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        Fragment prev = getFragmentManager().findFragmentByTag("dialog");
+
+        ft.addToBackStack(null);
+
+        // Create and show the dialog.
+        SshConnectFragmentDialog newFragment = SshConnectFragmentDialog.newInstance();
+        newFragment.setListener(new ConnectionStatusListener() {
+            @Override
+            public void onDisconnected() {
+
+                mTvHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mConnectStatus.setText("Connection Status: NOT CONNECTED");
+                    }
+                });
+            }
+
+            @Override
+            public void onConnected() {
+
+                mTvHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mConnectStatus.setText("Connection Status: CONNECTED");
+                    }
+                });
+            }
+        });
+
+        newFragment.show(ft, "dialog");
+    }
 }

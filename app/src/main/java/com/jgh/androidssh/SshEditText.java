@@ -5,7 +5,11 @@ import android.text.InputType;
 import android.text.Layout;
 import android.text.Selection;
 import android.util.AttributeSet;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputConnection;
+import android.view.inputmethod.InputConnectionWrapper;
 import android.widget.EditText;
 
 /**
@@ -14,7 +18,6 @@ import android.widget.EditText;
  * is the inability to delete (backspace) characters from
  * lines above the bottom line, as in a terminal.
  *
- * Created by Jon Hough on 7/29/14.
  */
 public class SshEditText extends EditText {
 
@@ -54,6 +57,7 @@ public class SshEditText extends EditText {
     public void setup(){
         this.setRawInputType(InputType.TYPE_CLASS_TEXT);
         this.setImeOptions(EditorInfo.IME_ACTION_GO);
+        this.setTextSize(12f);
     }
 
     @Override
@@ -120,7 +124,11 @@ public class SshEditText extends EditText {
      * @return True if new line, false otherwise.
      */
     public boolean isNewLine() {
+
         int i = this.getText().toString().toCharArray().length;
+        if(i == 0)
+            return true;
+
         char s = this.getText().toString().toCharArray()[i - 1];
         if (s == '\n' || s == '\r') return true;
 
@@ -138,5 +146,56 @@ public class SshEditText extends EditText {
 
     public synchronized String getPrompt(){
         return mPrompt;
+    }
+
+    @Override
+    public InputConnection onCreateInputConnection(EditorInfo outAttrs) {
+        return new SshConnectionWrapper(super.onCreateInputConnection(outAttrs),
+                true);
+    }
+
+    private class SshConnectionWrapper extends InputConnectionWrapper{
+
+
+        public SshConnectionWrapper(InputConnection target, boolean mutable) {
+            super(target, mutable);
+        }
+
+        @Override
+        public boolean sendKeyEvent(KeyEvent event) {
+            if (event.getKeyCode() == KeyEvent.KEYCODE_DEL) {
+                Log.v("TAG main ", "sendKeyEvent (TRY)");
+                if(isNewLine()) {
+                    Log.v("SSHEDIT", "sendKeyEvent  is not new line");
+                    return false;
+
+                }
+                else if(getCurrentCursorLine() < getLineCount() - 1){
+                    Log.v("SSHEDIT", "sendKeyEvent  is not last line");
+                    return false;
+                }
+            }
+            Log.v("SSSHEDIT", "passed sendKeyEvent");
+            return super.sendKeyEvent(event);
+        }
+
+        @Override
+        public boolean deleteSurroundingText (int beforeLength, int afterLength){
+            Log.v("TAG main ", "deleting (TRY)");
+            if(isNewLine()) {
+                Log.v("SSHEDIT", "is not new line");
+                return false;
+
+            }
+            else if(getCurrentCursorLine() < getLineCount() - 1){
+                Log.v("SSHEDIT", "is not last line");
+                return false;
+            }
+
+            else {
+                Log.v("SSHEDIT", "can delete surrounding");
+                return super.deleteSurroundingText(beforeLength, afterLength);
+            }
+        }
     }
 }

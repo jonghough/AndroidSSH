@@ -17,7 +17,6 @@ import java.util.Vector;
 /**
  * Adapter for holding data of remote files
  * in remote host's current directory.
- * Created by jon on 4/12/14.
  */
 public class RemoteFileListAdapter extends BaseAdapter {
 
@@ -84,7 +83,6 @@ public class RemoteFileListAdapter extends BaseAdapter {
     /**
      * Private view holder class
      *
-     * @author Jonathan Hough
      */
     private class ViewHolder {
         ImageView imageView;

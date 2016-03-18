@@ -67,14 +67,21 @@ public class ShellController {
      * @throws java.io.IOException
      */
     public synchronized void disconnect() throws IOException {
+        try {
+            Log.v(TAG, "close shell channel");
+            //disconnect channel
+            if (mChannel != null)
+                mChannel.disconnect();
 
-        //close streams
-        mDataOutputStream.flush();
-        mDataOutputStream.close();
-        mBufferedReader.close();
-        //disconnect channel
-        if (mChannel != null)
-            mChannel.disconnect();
+            Log.v(TAG, "close streams");
+            //close streams
+            mDataOutputStream.flush();
+            mDataOutputStream.close();
+            mBufferedReader.close();
+
+        }catch(Throwable t){
+            Log.e(TAG, "Exception: "+t.getMessage());
+        }
     }
 
     /**
@@ -133,6 +140,7 @@ public class ShellController {
                                 }
                             });
                         }
+
                     }
                 } catch (Exception e) {
                     Log.e(TAG, " Exception " + e.getMessage() + "." + e.getCause() + "," + e.getClass().toString());
@@ -147,10 +155,7 @@ public class ShellController {
      * @return
      */
     public static String fetchPrompt(String returnedString){
-        if(returnedString != null && returnedString.trim().split("$").length > 0){
-            return returnedString.trim().split("$")[0];
-        }
-        else return "";
+        return "";
     }
 
     /**
