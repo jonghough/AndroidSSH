@@ -164,36 +164,29 @@ public class SshEditText extends EditText {
         @Override
         public boolean sendKeyEvent(KeyEvent event) {
             if (event.getKeyCode() == KeyEvent.KEYCODE_DEL) {
-                Log.v("TAG main ", "sendKeyEvent (TRY)");
                 if(isNewLine()) {
-                    Log.v("SSHEDIT", "sendKeyEvent  is not new line");
                     return false;
 
                 }
                 else if(getCurrentCursorLine() < getLineCount() - 1){
-                    Log.v("SSHEDIT", "sendKeyEvent  is not last line");
                     return false;
                 }
             }
-            Log.v("SSSHEDIT", "passed sendKeyEvent");
             return super.sendKeyEvent(event);
         }
 
         @Override
         public boolean deleteSurroundingText (int beforeLength, int afterLength){
-            Log.v("TAG main ", "deleting (TRY)");
+
             if(isNewLine()) {
-                Log.v("SSHEDIT", "is not new line");
                 return false;
 
             }
             else if(getCurrentCursorLine() < getLineCount() - 1){
-                Log.v("SSHEDIT", "is not last line");
                 return false;
             }
 
             else {
-                Log.v("SSHEDIT", "can delete surrounding");
                 return super.deleteSurroundingText(beforeLength, afterLength);
             }
         }

@@ -79,34 +79,17 @@ public class MainActivity extends Activity implements OnClickListener {
             public void afterTextChanged(Editable editable) {
                 String[] sr = editable.toString().split("\r\n");
                 String s = sr[sr.length - 1];
-                Log.v(TAG, "after change " + s);
                 mLastLine = s;
 
             }
         });
-//
-//        mCommandEdit.setOnKeyListener(new View.OnKeyListener() {
-//            public boolean onKey(View v, int keyCode, KeyEvent event) {
-//                Log.v("tag onkeylistener", "key code is "+keyCode);
-//                if (keyCode == KeyEvent.KEYCODE_DEL) {
-//                    if (mCommandEdit.getCurrentCursorLine() == mCommandEdit.getLineCount() - 1 || mCommandEdit.isNewLine()) {
-//                        mCommandEdit.setSelection(mCommandEdit.getText().length());
-//                        Log.v("TAG main ","deleting");
-//                        return true;
-//                    }
-//                    return false;
-//                }
-//                return false;
-//            }
-//
-//
-//        });
+
 
         mCommandEdit.setOnEditorActionListener(
                 new TextView.OnEditorActionListener() {
                     @Override
                     public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                        Log.d(TAG, "editor action " + event);
+                        //Log.d(TAG, "editor action " + event);
                         if (isEditTextEmpty(mCommandEdit)) {
                             return false;
                         }
@@ -126,8 +109,6 @@ public class MainActivity extends Activity implements OnClickListener {
 
                                 @Override
                                 public void onComplete(String completeString) {
-//                                    mTextView.setText(mTextView.getText() + "\n" + completeString
-//                                            + mUserEdit.getText().toString().trim() + "\n");
                                 }
                             };
                             mCommandEdit.AddLastInput(command);
@@ -235,9 +216,6 @@ public class MainActivity extends Activity implements OnClickListener {
 
     void showDialog() {
 
-        // DialogFragment.show() will take care of adding the fragment
-        // in a transaction.  We also want to remove any currently showing
-        // dialog, so make our own transaction and take care of that here.
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         Fragment prev = getFragmentManager().findFragmentByTag("dialog");
 
